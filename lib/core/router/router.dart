@@ -1,17 +1,17 @@
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
+import 'package:fellow_traveller_mobile/core/screens/main_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/root_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 GlobalKey<NavigatorState> shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
-  redirect: (context, state) {},
+  redirect: (context, state) => null,
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutesEnum.splash.name,
+  initialLocation: AppRoutesEnum.splash.path,
   routes: <RouteBase>[
     GoRoute(
       path: AppRoutesEnum.splash.path,
@@ -24,9 +24,27 @@ final router = GoRouter(
     ShellRoute(
       navigatorKey: shellNavigatorKey,
       builder: (BuildContext context, GoRouterState state, Widget child) {
-        return RootScreen();
+        return RootScreen(
+          currentPath: state.uri.path,
+          child: child,
+        );
       },
-      routes: [],
+      routes: <RouteBase>[
+        GoRoute(
+          path: AppRoutesEnum.passengerMain.path,
+          name: AppRoutesEnum.passengerMain.name,
+          builder: (BuildContext context, GoRouterState state) {
+            return const MainScreen(initialRole: MainScreenRole.passenger);
+          },
+        ),
+        GoRoute(
+          path: AppRoutesEnum.driverMain.path,
+          name: AppRoutesEnum.driverMain.name,
+          builder: (BuildContext context, GoRouterState state) {
+            return const MainScreen(initialRole: MainScreenRole.driver);
+          },
+        ),
+      ],
     ),
   ],
 );
