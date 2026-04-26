@@ -1,4 +1,5 @@
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
+import 'package:fellow_traveller_mobile/core/features/login/presentation/screens/auth_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/main_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/root_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/splash_screen.dart';
@@ -20,28 +21,24 @@ final router = GoRouter(
         return SplashScreen();
       },
     ),
-
+    GoRoute(
+      path: AppRoutesEnum.auth.path,
+      name: AppRoutesEnum.auth.name,
+      builder: (context, state) {
+        return AuthScreen();
+      },
+    ),
     ShellRoute(
       navigatorKey: shellNavigatorKey,
       builder: (BuildContext context, GoRouterState state, Widget child) {
-        return RootScreen(
-          currentPath: state.uri.path,
-          child: child,
-        );
+        return RootScreen(currentPath: state.uri.path, child: child);
       },
       routes: <RouteBase>[
         GoRoute(
-          path: AppRoutesEnum.passengerMain.path,
-          name: AppRoutesEnum.passengerMain.name,
+          path: AppRoutesEnum.main.path,
+          name: AppRoutesEnum.main.name,
           builder: (BuildContext context, GoRouterState state) {
             return const MainScreen(initialRole: MainScreenRole.passenger);
-          },
-        ),
-        GoRoute(
-          path: AppRoutesEnum.driverMain.path,
-          name: AppRoutesEnum.driverMain.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return const MainScreen(initialRole: MainScreenRole.driver);
           },
         ),
       ],

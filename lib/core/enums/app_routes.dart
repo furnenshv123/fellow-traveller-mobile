@@ -1,4 +1,4 @@
-enum AppRoutesEnum { login, driverMain, passengerMain, splash }
+enum AppRoutesEnum { auth, main, splash }
 
 extension AppRouteExt on AppRoutesEnum {
   String get name => toString().split('.')[1];

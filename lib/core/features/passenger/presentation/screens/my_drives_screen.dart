@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class PassengerMyDrivesScreen extends StatefulWidget {
-  const PassengerMyDrivesScreen({super.key});
+class PassengerMyRidesScreen extends StatefulWidget {
+  const PassengerMyRidesScreen({super.key});
 
   @override
-  State<PassengerMyDrivesScreen> createState() => _PassengerMyDrivesScreenState();
+  State<PassengerMyRidesScreen> createState() => _PassengerMyRidesScreenState();
 }
 
-class _PassengerMyDrivesScreenState extends State<PassengerMyDrivesScreen> {
+class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
   final List<_PassengerDrive> _bookedDrives = <_PassengerDrive>[
     _PassengerDrive(
       from: 'Алматы',
@@ -191,7 +191,9 @@ class _PassengerMyDrivesScreenState extends State<PassengerMyDrivesScreen> {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            drive.status == 'Upcoming' ? 'Впереди' : 'Завершено',
+                            drive.status == 'Upcoming'
+                                ? 'Впереди'
+                                : 'Завершено',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -335,10 +337,7 @@ class _PassengerMyDrivesScreenState extends State<PassengerMyDrivesScreen> {
                 ),
                 child: const Text(
                   'Закрыть',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
             ],

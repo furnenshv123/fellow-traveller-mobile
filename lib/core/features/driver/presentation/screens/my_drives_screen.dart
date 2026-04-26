@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class DriverMyDrivesScreen extends StatefulWidget {
-  const DriverMyDrivesScreen({super.key});
+class DriverMyRidesScreen extends StatefulWidget {
+  const DriverMyRidesScreen({super.key});
 
   @override
-  State<DriverMyDrivesScreen> createState() => _DriverMyDrivesScreenState();
+  State<DriverMyRidesScreen> createState() => _DriverMyDrivesScreenState();
 }
 
-class _DriverMyDrivesScreenState extends State<DriverMyDrivesScreen> {
+class _DriverMyDrivesScreenState extends State<DriverMyRidesScreen> {
   final List<_DriverDrive> _myDrives = <_DriverDrive>[
     _DriverDrive(
       from: 'Алматы',

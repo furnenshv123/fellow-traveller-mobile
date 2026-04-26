@@ -12,7 +12,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-  with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _logoScale;
   late final Animation<double> _logoOpacity;
@@ -26,26 +26,26 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1700),
     )..repeat(reverse: true);
 
-    _logoScale = Tween<double>(begin: 0.86, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _logoScale = Tween<double>(
+      begin: 0.86,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    _logoOpacity = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _logoOpacity = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _titleOffset = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     Future<void>.delayed(const Duration(milliseconds: 2200), () {
       if (!mounted) {
         return;
       }
-      context.go(AppRoutesEnum.passengerMain.path);
+      context.go(AppRoutesEnum.main.path);
     });
   }
 
@@ -89,7 +89,9 @@ class _SplashScreenState extends State<SplashScreen>
                           color: Colors.white.withValues(alpha: 0.12),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
-                              color: const Color(0xFF1A84FF).withValues(alpha: 0.45),
+                              color: const Color(
+                                0xFF1A84FF,
+                              ).withValues(alpha: 0.45),
                               blurRadius: 34,
                               spreadRadius: 2,
                             ),

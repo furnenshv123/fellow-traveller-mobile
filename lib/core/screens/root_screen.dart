@@ -4,11 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
 
 class RootScreen extends StatefulWidget {
-  const RootScreen({
-    required this.currentPath,
-    required this.child,
-    super.key,
-  });
+  const RootScreen({required this.currentPath, required this.child, super.key});
 
   final String currentPath;
   final Widget child;
@@ -16,6 +12,7 @@ class RootScreen extends StatefulWidget {
   @override
   State<RootScreen> createState() => _RootScreenState();
 }
+
 class _RootScreenState extends State<RootScreen> {
   int _currentIndexFromPath(String path) {
     if (path.startsWith(AppRoutesEnum.driverMain.path)) {
@@ -25,8 +22,9 @@ class _RootScreenState extends State<RootScreen> {
   }
 
   void _onItemTap(int index) {
-    final String targetPath =
-        index == 0 ? AppRoutesEnum.passengerMain.path : AppRoutesEnum.driverMain.path;
+    final String targetPath = index == 0
+        ? AppRoutesEnum.passengerMain.path
+        : AppRoutesEnum.driverMain.path;
     if (widget.currentPath != targetPath) {
       context.go(targetPath);
     }
