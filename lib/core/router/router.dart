@@ -1,5 +1,7 @@
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
-import 'package:fellow_traveller_mobile/core/features/login/presentation/screens/auth_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/auth/presentation/screens/auth_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/driver/presentation/screens/my_drives_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/driver/presentation/screens/profile_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/main_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/root_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/splash_screen.dart';
@@ -39,6 +41,20 @@ final router = GoRouter(
           name: AppRoutesEnum.main.name,
           builder: (BuildContext context, GoRouterState state) {
             return const MainScreen(initialRole: MainScreenRole.passenger);
+          },
+        ),
+        GoRoute(
+          path: AppRoutesEnum.rides.path,
+          name: AppRoutesEnum.rides.name,
+          builder: (BuildContext context, GoRouterState state) {
+            return const DriverMyRidesScreen();
+          },
+        ),
+        GoRoute(
+          path: AppRoutesEnum.profile.path,
+          name: AppRoutesEnum.profile.name,
+          builder: (BuildContext context, GoRouterState state) {
+            return const DriverProfileScreen();
           },
         ),
       ],

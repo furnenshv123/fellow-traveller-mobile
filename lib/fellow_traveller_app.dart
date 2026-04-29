@@ -6,11 +6,9 @@ class FellowTravellerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp.router(
       routerConfig: router,
       title: 'Fellow Traveller Mobile',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
     );
   }
 }
