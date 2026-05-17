@@ -32,9 +32,8 @@ class _AuthScreenState extends State<AuthScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: <Color>[
-              Color(0xFFF5F5F5),
-              Color(0xFFEEEEEE),
-              Color(0xFFE8E8E8),
+              Color(0xFF0F1419),
+              Color(0xFF1A1F2E),
             ],
           ),
         ),
@@ -43,18 +42,15 @@ class _AuthScreenState extends State<AuthScreen> {
             padding: const EdgeInsets.all(20),
             child: Container(
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Color(0xFF1783FF),
-                    Color(0xFF176DFF),
-                  ],
-                ),
+                color: const Color(0xFF1E2333),
                 borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: const Color(0xFF2E3447),
+                  width: 1,
+                ),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: const Color(0xFF1783FF).withValues(alpha: 0.35),
+                    color: Colors.black.withValues(alpha: 0.4),
                     blurRadius: 24,
                     spreadRadius: 4,
                   ),
@@ -68,7 +64,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text(
                     'Вход',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFF5F5F5),
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
                     ),
@@ -77,7 +73,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text(
                     'Email',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFE0E0E0),
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -89,15 +85,32 @@ class _AuthScreenState extends State<AuthScreen> {
                     decoration: InputDecoration(
                       hintText: 'test1@example.com',
                       hintStyle: const TextStyle(
-                        color: Color(0xFFBDBDBD),
+                        color: Color(0xFF8A8E99),
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: const Color(0xFF2A3142),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3A4255),
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3A4255),
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF1783FF),
+                          width: 2,
+                        ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -105,7 +118,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     style: const TextStyle(
-                      color: Color(0xFF1A1A1A),
+                      color: Color(0xFFE0E0E0),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -114,7 +127,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text(
                     'Пароль',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFE0E0E0),
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -126,15 +139,32 @@ class _AuthScreenState extends State<AuthScreen> {
                     decoration: InputDecoration(
                       hintText: '••••••••',
                       hintStyle: const TextStyle(
-                        color: Color(0xFFBDBDBD),
+                        color: Color(0xFF8A8E99),
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: const Color(0xFF2A3142),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3A4255),
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3A4255),
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF1783FF),
+                          width: 2,
+                        ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -155,7 +185,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     style: const TextStyle(
-                      color: Color(0xFF1A1A1A),
+                      color: Color(0xFFE0E0E0),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -164,7 +194,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text(
                     'Роль',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFE0E0E0),
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -172,10 +202,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   const SizedBox(height: 12),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
+                      color: const Color(0xFF2A3142),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: const Color(0xFF3A4255),
                         width: 1,
                       ),
                     ),
@@ -213,7 +243,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   FilledButton(
                     onPressed: () {},
                     style: FilledButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF1783FF),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -222,7 +252,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: const Text(
                       'Войти',
                       style: TextStyle(
-                        color: Color(0xFF1783FF),
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
@@ -238,7 +268,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             TextSpan(
                               text: 'Нет аккаунта? ',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Color(0xFFB0B5C0),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -246,7 +276,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             TextSpan(
                               text: 'Зарегистрироваться',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Color(0xFF1783FF),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 decoration: TextDecoration.underline,
@@ -282,7 +312,9 @@ class _AuthScreenState extends State<AuthScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected ? Colors.white : Colors.white70,
+                color: isSelected
+                    ? const Color(0xFF1783FF)
+                    : const Color(0xFF6A7080),
                 width: 2,
               ),
             ),
@@ -291,7 +323,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     margin: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: Color(0xFF1783FF),
                     ),
                   )
                 : null,
@@ -300,7 +332,7 @@ class _AuthScreenState extends State<AuthScreen> {
           Text(
             label,
             style: const TextStyle(
-              color: Colors.white,
+              color: Color(0xFFE0E0E0),
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),

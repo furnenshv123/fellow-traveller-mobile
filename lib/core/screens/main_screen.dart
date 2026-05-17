@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 enum MainScreenRole { passenger, driver }
@@ -208,32 +209,30 @@ class _MainScreenState extends State<MainScreen> {
     final bool isPassenger = _role == _UserRole.passenger;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F4F7),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              _buildHeroBlock(isPassenger),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  isPassenger ? 'Найденные поездки' : 'Ваши поездки',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1D24),
-                  ),
+      backgroundColor: const Color(0xFF0F1419),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            _buildHeroBlock(isPassenger),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                isPassenger ? 'Найденные поездки' : 'Ваши поездки',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFE0E0E0),
                 ),
               ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
-                child: _buildDrivesList(),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+              child: _buildDrivesList(),
+            ),
+          ],
         ),
       ),
     );
@@ -290,7 +289,7 @@ class _MainScreenState extends State<MainScreen> {
                               shape: BoxShape.circle,
                               color: Color(0xFF1A84FF),
                             ),
-                            child: const Icon(Icons.airline_stops_rounded, color: Colors.white),
+                            child: const Icon(Icons.airline_stops_rounded, color: Color(0xFFF5F5F5)),
                           ),
                           const SizedBox(width: 10),
                           const Text(

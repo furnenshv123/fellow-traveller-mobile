@@ -59,4 +59,7 @@ class LightTheme implements ThemeImplementation {
 
   @override
   Color get deepLogo => AppColors.primaryColor;
+
+  @override
+  Color get bottomSheetBackground => AppColors.moonLightBlueColor;
 }

@@ -30,32 +30,48 @@ final router = GoRouter(
         return AuthScreen();
       },
     ),
-    ShellRoute(
-      navigatorKey: shellNavigatorKey,
-      builder: (BuildContext context, GoRouterState state, Widget child) {
-        return RootScreen(currentPath: state.uri.path, child: child);
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          path: AppRoutesEnum.main.path,
-          name: AppRoutesEnum.main.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return const MainScreen(initialRole: MainScreenRole.passenger);
+    StatefulShellRoute.indexedStack(
+      builder:
+          (
+            BuildContext context,
+            GoRouterState state,
+            StatefulNavigationShell child,
+          ) {
+            return RootScreen(currentPath: state.uri.path, child: child);
           },
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutesEnum.main.path,
+              name: AppRoutesEnum.main.name,
+              builder: (BuildContext context, GoRouterState state) {
+                return const MainScreen(initialRole: MainScreenRole.passenger);
+              },
+            ),
+          ],
         ),
-        GoRoute(
-          path: AppRoutesEnum.rides.path,
-          name: AppRoutesEnum.rides.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return const DriverMyRidesScreen();
-          },
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutesEnum.rides.path,
+              name: AppRoutesEnum.rides.name,
+              builder: (BuildContext context, GoRouterState state) {
+                return const DriverMyRidesScreen();
+              },
+            ),
+          ],
         ),
-        GoRoute(
-          path: AppRoutesEnum.profile.path,
-          name: AppRoutesEnum.profile.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return const DriverProfileScreen();
-          },
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutesEnum.profile.path,
+              name: AppRoutesEnum.profile.name,
+              builder: (BuildContext context, GoRouterState state) {
+                return const DriverProfileScreen();
+              },
+            ),
+          ],
         ),
       ],
     ),

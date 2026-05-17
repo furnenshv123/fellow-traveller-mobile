@@ -4,7 +4,8 @@ class PassengerSearchComponent extends StatefulWidget {
   const PassengerSearchComponent({super.key});
 
   @override
-  State<PassengerSearchComponent> createState() => _PassengerSearchComponentState();
+  State<PassengerSearchComponent> createState() =>
+      _PassengerSearchComponentState();
 }
 
 class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
@@ -58,11 +59,12 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF1E2333),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF2E3447), width: 1),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x16000000),
+            color: Color(0x00000000),
             blurRadius: 14,
             offset: Offset(0, 4),
           ),
@@ -76,7 +78,7 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1A1D24),
+              color: Color(0xFFE0E0E0),
             ),
           ),
           const SizedBox(height: 16),
@@ -88,7 +90,7 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
               onPressed: _switchFromTo,
               icon: const Icon(
                 Icons.swap_vert_rounded,
-                color: Color(0xFF0E121B),
+                color: Color(0xFFE0E0E0),
                 size: 24,
               ),
             ),
@@ -113,10 +115,7 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
             ),
             child: const Text(
               'Найти поездки',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -133,8 +132,9 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
+        color: const Color(0xFF2A3142),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF3A4255), width: 1),
       ),
       child: TextField(
         controller: controller,
@@ -143,7 +143,7 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
           suffixIcon: suffix,
           hintText: hint,
           hintStyle: const TextStyle(
-            color: Color(0xFFBDBDBD),
+            color: Color(0xFF8A8E99),
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -151,51 +151,45 @@ class _PassengerSearchComponentState extends State<PassengerSearchComponent> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
         ),
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: Color(0xFF1A1D24),
+          color: Color(0xFFE0E0E0),
         ),
       ),
     );
   }
 
   Widget _buildDateInput() {
-    return SizedBox(
-      height: 56,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5F5F5),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: _pickDate,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: <Widget>[
-                const Icon(
-                  Icons.calendar_month_outlined,
-                  size: 20,
-                  color: Color(0xFF1783FF),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  _dateController.text.isEmpty ? 'дата' : _dateController.text,
-                  style: TextStyle(
-                    color: _dateController.text.isEmpty
-                        ? const Color(0xFFBDBDBD)
-                        : const Color(0xFF1A1D24),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: _pickDate,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          children: <Widget>[
+            const Icon(
+              Icons.calendar_month_outlined,
+              size: 20,
+              color: Color(0xFF1783FF),
             ),
-          ),
+            const SizedBox(width: 10),
+            Text(
+              _dateController.text.isEmpty ? 'дата' : _dateController.text,
+              style: TextStyle(
+                color: _dateController.text.isEmpty
+                    ? const Color(0xFFBDBDBD)
+                    : const Color(0xFF1A1D24),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );

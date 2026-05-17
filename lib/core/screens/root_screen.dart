@@ -1,5 +1,4 @@
-import 'package:fellow_traveller_mobile/core/router/router.dart';
-import 'package:fellow_traveller_mobile/core/utils/theme/custom_theme.dart';
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +10,7 @@ class RootScreen extends StatefulWidget {
   const RootScreen({required this.currentPath, required this.child, super.key});
 
   final String currentPath;
-  final Widget child;
+  final StatefulNavigationShell child;
 
   @override
   State<RootScreen> createState() => _RootScreenState();
@@ -30,7 +29,7 @@ class _RootScreenState extends State<RootScreen> {
     String newPath = _getPathFromIndex(index);
     if (_currentPath != newPath) {
       _currentPath = newPath;
-      shellNavigatorKey.currentState?.context.go(newPath);
+      widget.child.goBranch(index);
     }
   }
 
@@ -59,37 +58,27 @@ class _RootScreenState extends State<RootScreen> {
     return 0;
   }
 
-  void _onTapExtra() {}
   @override
   Widget build(BuildContext context) {
-    return CustomTheme(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-
-        body: widget.child,
-        bottomNavigationBar: GlassBottomBar(
-          tabs: [
-            GlassBottomBarTab(
-              icon: Icon(CupertinoIcons.home),
-              label: 'Главная',
-            ),
-            GlassBottomBarTab(
-              icon: Icon(Icons.drive_eta),
-              label: 'Мои поездки',
-            ),
-            GlassBottomBarTab(
-              icon: Icon(CupertinoIcons.person),
-              label: 'Профиль',
-            ),
-          ],
-          selectedIndex: _currentIndexFromPath(widget.currentPath),
-          onTabSelected: onItemTapped,
-          // extraButton: GlassBottomBarExtraButton(
-          //   icon: Icon(CupertinoIcons.arrow_2_circlepath),
-          //   onTap: _onTapExtra,
-          //   label: 'Изменить роль',
-          // ),
+    return Scaffold(
+      extendBody: true,
+      backgroundColor: const Color(0xFF0F1419),
+      body: widget.child,
+      bottomNavigationBar: GlassBottomBar(
+        glassSettings: LiquidGlassSettings(
+          glassColor: const Color(0xFF1E2333),
+          visibility: 0.8
         ),
+        tabs: [
+          GlassBottomBarTab(icon: Icon(CupertinoIcons.home), label: 'Главная'),
+          GlassBottomBarTab(icon: Icon(Icons.drive_eta), label: 'Мои поездки'),
+          GlassBottomBarTab(
+            icon: Icon(CupertinoIcons.person),
+            label: 'Профиль',
+          ),
+        ],
+        selectedIndex: _currentIndexFromPath(widget.currentPath),
+        onTabSelected: onItemTapped,
       ),
     );
   }

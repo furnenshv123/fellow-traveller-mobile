@@ -74,16 +74,7 @@ class CustomTheme extends InheritedWidget {
   }
 
   void changeTheme() {
-    bool isDarkTheme;
-    Brightness? sysBrightness =
-        WidgetsBinding.instance.window.platformBrightness;
-    isDarkTheme = sysBrightness == Brightness.dark;
-    if (isDarkTheme) {
-      state.theme = LightTheme();
-    } else {
-      state.theme = LightTheme();
-    }
-    state.isDarkTheme = isDarkTheme;
+    state.theme = LightTheme();
   }
 
   static void setupMobileUi({Color statusBarColor = Colors.transparent}) {

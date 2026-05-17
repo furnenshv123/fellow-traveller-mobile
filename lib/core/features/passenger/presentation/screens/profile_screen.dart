@@ -11,14 +11,14 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F4F7),
+      backgroundColor: const Color(0xFF0F1419),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF1E2333),
         elevation: 0,
         title: const Text(
           'Профиль',
           style: TextStyle(
-            color: Color(0xFF1A1D24),
+            color: Color(0xFFF5F5F5),
             fontSize: 24,
             fontWeight: FontWeight.w700,
           ),
@@ -29,7 +29,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
         child: Column(
           children: <Widget>[
             Container(
-              color: Colors.white,
+              color: const Color(0xFF1E2333),
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

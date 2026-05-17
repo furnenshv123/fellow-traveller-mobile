@@ -12,7 +12,7 @@ class ThemeImplementation {
   String get fellowPeople => 'assets/images/fellow-people.svg';
   String get altAvatar => 'assets/images/alt-avatar.svg';
   Color get monoFormive => AppColors.grayColor;
-
+  Color get bottomSheetBackground => AppColors.moonLightBlueColor;
   Color get systemGray => AppColors.grayColor;
 
   Color get deepKupol => AppColors.grayColor;

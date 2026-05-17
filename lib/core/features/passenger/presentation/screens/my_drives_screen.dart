@@ -36,14 +36,14 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F4F7),
+      backgroundColor: const Color(0xFF0F1419),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF1E2333),
         elevation: 0,
         title: const Text(
           'Мои поездки',
           style: TextStyle(
-            color: Color(0xFF1A1D24),
+            color: Color(0xFFF5F5F5),
             fontSize: 24,
             fontWeight: FontWeight.w700,
           ),
@@ -62,11 +62,15 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFF1E2333),
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFF2E3447),
+                  width: 1,
+                ),
                 boxShadow: const <BoxShadow>[
                   BoxShadow(
-                    color: Color(0x16000000),
+                    color: Color(0x00000000),
                     blurRadius: 14,
                     offset: Offset(0, 4),
                   ),
