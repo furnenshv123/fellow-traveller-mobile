@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class PassengerProfileScreen extends StatefulWidget {
@@ -42,10 +43,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
                       color: Color(0xFFF5F5F5),
                     ),
                     child: const Center(
-                      child: Text(
-                        '👤',
-                        style: TextStyle(fontSize: 48),
-                      ),
+                      child: Text('👤', style: TextStyle(fontSize: 48)),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -54,7 +52,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1A1D24),
+                      color: AppColors.textVeryLight,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -72,7 +70,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1A1D24),
+                          color: AppColors.textVeryLight,
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -112,27 +110,28 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
             ),
             const SizedBox(height: 16),
             Container(
-              color: Colors.white,
+              color: AppColors.cardDark,
               child: Column(
-                children: <Widget>[
+                children: [
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.phone_rounded,
                     title: 'Номер телефона',
                     subtitle: '+7 (999) 123-45-67',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.mail_rounded,
                     title: 'Email',
                     subtitle: 'alina@example.com',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.history_rounded,
                     title: 'История поездок',
                     subtitle: '12 завершённых поездок',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.settings_rounded,
                     title: 'Настройки',
@@ -177,30 +176,26 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
   }) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      leading: Icon(
-        icon,
-        color: const Color(0xFF1783FF),
-        size: 24,
-      ),
+      leading: Icon(icon, color: const Color(0xFF1783FF), size: 24),
       title: Text(
         title,
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1A1D24),
+          color: AppColors.textLight,
         ),
       ),
       subtitle: Text(
         subtitle,
         style: const TextStyle(
           fontSize: 13,
-          color: Color(0xFF667085),
+          color: AppColors.textSecondary,
           fontWeight: FontWeight.w500,
         ),
       ),
       trailing: const Icon(
         Icons.chevron_right_rounded,
-        color: Color(0xFFCCCCCC),
+        color: AppColors.inputBorder,
       ),
     );
   }

@@ -15,6 +15,9 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
+  bool _isLogin = true;
+  List<String> loginTitles = ['Вход', 'Нет аккаунта?', 'Зарегистрироваться'];
+  List<String> registerTitles = ['Регистрация', 'Есть аккаунт?', 'Войти'];
 
   @override
   void dispose() {
@@ -31,10 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFF0F1419),
-              Color(0xFF1A1F2E),
-            ],
+            colors: <Color>[Color(0xFF0F1419), Color(0xFF1A1F2E)],
           ),
         ),
         child: Center(
@@ -44,10 +44,7 @@ class _AuthScreenState extends State<AuthScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E2333),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: const Color(0xFF2E3447),
-                  width: 1,
-                ),
+                border: Border.all(color: const Color(0xFF2E3447), width: 1),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.4),
@@ -61,8 +58,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const Text(
-                    'Вход',
+                  Text(
+                    _isLogin ? loginTitles[0] : registerTitles[0],
                     style: TextStyle(
                       color: Color(0xFFF5F5F5),
                       fontSize: 32,
@@ -249,8 +246,8 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text(
-                      'Войти',
+                    child: Text(
+                      _isLogin ? registerTitles[2]: loginTitles[2] ,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -261,12 +258,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   const SizedBox(height: 16),
                   Center(
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        setState(() {
+                          _isLogin = !_isLogin;
+                        });
+                      },
                       child: RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: <TextSpan>[
                             TextSpan(
-                              text: 'Нет аккаунта? ',
+                              text:  _isLogin ? loginTitles[1] : registerTitles[1],
                               style: TextStyle(
                                 color: Color(0xFFB0B5C0),
                                 fontSize: 14,
@@ -274,7 +275,9 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                             TextSpan(
-                              text: 'Зарегистрироваться',
+                              text: _isLogin
+                                  ? loginTitles[2]
+                                  : registerTitles[2],
                               style: TextStyle(
                                 color: Color(0xFF1783FF),
                                 fontSize: 14,

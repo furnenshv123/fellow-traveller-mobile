@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class DriverProfileScreen extends StatefulWidget {
@@ -11,14 +12,14 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F4F7),
+      backgroundColor: AppColors.darkBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.cardDark,
         elevation: 0,
         title: const Text(
           'Профиль',
           style: TextStyle(
-            color: Color(0xFF1A1D24),
+            color: AppColors.textVeryLight,
             fontSize: 24,
             fontWeight: FontWeight.w700,
           ),
@@ -29,7 +30,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
         child: Column(
           children: <Widget>[
             Container(
-              color: Colors.white,
+              color: AppColors.cardDark,
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,7 +55,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1A1D24),
+                      color: AppColors.textVeryLight,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -72,7 +73,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1A1D24),
+                          color: AppColors.textVeryLight,
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -80,7 +81,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                         '(234 отзывов)',
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF667085),
+                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -93,7 +94,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
+                      color: const Color(0xFF1E3A3A),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -101,7 +102,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2E7D32),
+                        color: AppColors.successGreen,
                       ),
                     ),
                   ),
@@ -118,7 +119,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                   FilledButton(
                     onPressed: () {},
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF1783FF),
+                      backgroundColor: AppColors.accentBlue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -140,7 +141,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
             ),
             const SizedBox(height: 16),
             Container(
-              color: Colors.white,
+              color: AppColors.cardDark,
               child: Column(
                 children: <Widget>[
                   _profileMenuItem(
@@ -148,25 +149,25 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                     title: 'Информация об авто',
                     subtitle: 'Toyota Camry 2020',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.phone_rounded,
                     title: 'Номер телефона',
                     subtitle: '+7 (999) 888-77-66',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.mail_rounded,
                     title: 'Email',
                     subtitle: 'nursultan@example.com',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.history_rounded,
                     title: 'История поездок',
                     subtitle: '142 завершённых поездки',
                   ),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.cardBorder),
                   _profileMenuItem(
                     icon: Icons.settings_rounded,
                     title: 'Настройки',
@@ -181,7 +182,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
               child: FilledButton.tonal(
                 onPressed: () {},
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFEBEE),
+                  backgroundColor: const Color(0xFF3A1D1D),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -192,7 +193,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFFC62828),
+                    color: Color(0xFFFF6B6B),
                   ),
                 ),
               ),
@@ -212,7 +213,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1783FF),
+            color: AppColors.accentBlue,
           ),
         ),
         const SizedBox(height: 4),
@@ -220,7 +221,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
           label,
           style: const TextStyle(
             fontSize: 12,
-            color: Color(0xFF667085),
+            color: AppColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -237,7 +238,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       leading: Icon(
         icon,
-        color: const Color(0xFF1783FF),
+        color: AppColors.accentBlue,
         size: 24,
       ),
       title: Text(
@@ -245,20 +246,20 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1A1D24),
+          color: AppColors.textLight,
         ),
       ),
       subtitle: Text(
         subtitle,
         style: const TextStyle(
           fontSize: 13,
-          color: Color(0xFF667085),
+          color: AppColors.textSecondary,
           fontWeight: FontWeight.w500,
         ),
       ),
       trailing: const Icon(
         Icons.chevron_right_rounded,
-        color: Color(0xFFCCCCCC),
+        color: AppColors.inputBorder,
       ),
     );
   }

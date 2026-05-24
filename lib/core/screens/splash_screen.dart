@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (!mounted) {
         return;
       }
-      context.go(AppRoutesEnum.main.path);
+      context.go(AppRoutesEnum.auth.path);
     });
   }
 
