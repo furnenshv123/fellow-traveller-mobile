@@ -1,19 +1,18 @@
-// import 'package:dio/dio.dart';
-// import 'package:retrofit/http.dart';
+import 'package:dio/dio.dart';
+import 'package:fellow_traveller_mobile/core/features/auth/data/models/auth_model.dart';
+import 'package:retrofit/error_logger.dart';
+import 'package:retrofit/http.dart';
+import 'package:fellow_traveller_mobile/core/features/auth/data/models/auth_response.dart';
 
-// @RestApi()
-// abstract class ApiClientAuth {
-//   factory ApiClientAuth(Dio dio, {String? baseUrl}) = _ApiClientAuth;
-//   @GET('/api/user/user-info')
-//   Future<UserInfoModel> getUserInfo();
-//   @POST('/api/auth/sign-in')
-//   Future<TokenModel> signIn(@Body() SignInRequest signInRequest);
-//   @POST('/api/reset-password/get-code-to-reset-by-email')
-//   Future<RequestErrorModel> getCodeToResetByEmail({
-//     @Body() required EmailCodeModel email,
-//   });
-//   @POST('/api/reset-password/verify-code')
-//   Future<RequestErrorModel> verifyCode({@Body() required EmailCodeModel email});
-//   @PUT('/api/reset-password/reset-password')
-//   Future<TokenModel> resetPassword({@Body() required EmailCodeModel email});
-// }
+part 'auth_api.g.dart';
+
+@RestApi()
+abstract class ApiClientAuth {
+  factory ApiClientAuth(Dio dio, {String? baseUrl}) = _ApiClientAuth;
+  @POST('/auth/login')
+  Future<AuthResponse> login({@Body() required AuthModel loginRequest});
+  @POST('/auth/register')
+  Future<AuthResponse> register({@Body() required AuthModel registerRequest});
+  @POST('/auth/change-role')
+  Future<AuthResponse> changeRole({@Body() required String userRole});
+}

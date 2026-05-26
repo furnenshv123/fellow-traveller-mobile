@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'auth_response.g.dart';
 
 @JsonSerializable()
-class Ride {
+class AuthResponse {
   @JsonKey(name: "access_token")
   final String? accessToken;
   @JsonKey(name: "token_type")
@@ -18,7 +18,7 @@ class Ride {
   @JsonKey(name: "has_passenger_profile")
   final bool? hasPassengerProfile;
 
-  Ride({
+  AuthResponse({
     this.accessToken,
     this.tokenType,
     this.userId,
@@ -28,7 +28,7 @@ class Ride {
     this.hasPassengerProfile,
   });
 
-  Ride copyWith({
+  AuthResponse copyWith({
     String? accessToken,
     String? tokenType,
     int? userId,
@@ -36,7 +36,7 @@ class Ride {
     String? currentRole,
     bool? hasDriverProfile,
     bool? hasPassengerProfile,
-  }) => Ride(
+  }) => AuthResponse(
     accessToken: accessToken ?? this.accessToken,
     tokenType: tokenType ?? this.tokenType,
     userId: userId ?? this.userId,
@@ -46,7 +46,7 @@ class Ride {
     hasPassengerProfile: hasPassengerProfile ?? this.hasPassengerProfile,
   );
 
-  factory Ride.fromJson(Map<String, dynamic> json) => _$RideFromJson(json);
+  factory AuthResponse.fromJson(Map<String, dynamic> json) => _$AuthResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$RideToJson(this);
+  Map<String, dynamic> toJson() => _$AuthResponseToJson(this);
 }

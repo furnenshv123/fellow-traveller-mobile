@@ -6,7 +6,7 @@ part of 'auth_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Ride _$RideFromJson(Map<String, dynamic> json) => Ride(
+AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
   accessToken: json['access_token'] as String?,
   tokenType: json['token_type'] as String?,
   userId: (json['user_id'] as num?)?.toInt(),
@@ -16,12 +16,13 @@ Ride _$RideFromJson(Map<String, dynamic> json) => Ride(
   hasPassengerProfile: json['has_passenger_profile'] as bool?,
 );
 
-Map<String, dynamic> _$RideToJson(Ride instance) => <String, dynamic>{
-  'access_token': instance.accessToken,
-  'token_type': instance.tokenType,
-  'user_id': instance.userId,
-  'email': instance.email,
-  'current_role': instance.currentRole,
-  'has_driver_profile': instance.hasDriverProfile,
-  'has_passenger_profile': instance.hasPassengerProfile,
-};
+Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
+    <String, dynamic>{
+      'access_token': instance.accessToken,
+      'token_type': instance.tokenType,
+      'user_id': instance.userId,
+      'email': instance.email,
+      'current_role': instance.currentRole,
+      'has_driver_profile': instance.hasDriverProfile,
+      'has_passenger_profile': instance.hasPassengerProfile,
+    };

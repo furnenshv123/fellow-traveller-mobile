@@ -1,5 +1,8 @@
+import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
+import 'package:fellow_traveller_mobile/core/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fellow_traveller_mobile/core/features/auth/presentation/screens/auth_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fellow_traveller_mobile/core/features/driver/presentation/screens/my_drives_screen.dart';
 import 'package:fellow_traveller_mobile/core/features/driver/presentation/screens/profile_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/main_screen.dart';
@@ -27,7 +30,10 @@ final router = GoRouter(
       path: AppRoutesEnum.auth.path,
       name: AppRoutesEnum.auth.name,
       builder: (context, state) {
-        return AuthScreen();
+        return BlocProvider(
+          create: (_) => AppDependencies.instance.createAuthBloc(),
+          child: const AuthScreen(),
+        );
       },
     ),
     StatefulShellRoute.indexedStack(

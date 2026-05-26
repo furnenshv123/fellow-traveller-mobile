@@ -6,13 +6,13 @@ part of 'auth_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Ride _$RideFromJson(Map<String, dynamic> json) => Ride(
+AuthModel _$AuthModelFromJson(Map<String, dynamic> json) => AuthModel(
   email: json['email'] as String?,
   password: json['password'] as String?,
   role: json['role'] as String?,
 );
 
-Map<String, dynamic> _$RideToJson(Ride instance) => <String, dynamic>{
+Map<String, dynamic> _$AuthModelToJson(AuthModel instance) => <String, dynamic>{
   'email': instance.email,
   'password': instance.password,
   'role': instance.role,
