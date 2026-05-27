@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:fellow_traveller_mobile/core/config/app_config.dart';
 import 'package:fellow_traveller_mobile/core/data/secure_storage.dart';
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
 import 'package:fellow_traveller_mobile/core/router/router.dart';
@@ -8,7 +9,7 @@ import 'package:fellow_traveller_mobile/core/utils/talker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:talker_dio_logger/talker_dio_logger_interceptor.dart';
 
-const BASE_URL = 'https://your-api.example.com'; // move to env/config
+const BASE_URL = AppConfig.baseUrl;
 
 class AuthInterceptor extends Interceptor {
   AuthInterceptor(this._secureTokenStorage);

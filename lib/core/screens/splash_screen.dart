@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -41,11 +41,15 @@ class _SplashScreenState extends State<SplashScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    Future<void>.delayed(const Duration(milliseconds: 2200), () {
+    Future<void>.delayed(const Duration(milliseconds: 2200), () async {
       if (!mounted) {
         return;
       }
-      context.go(AppRoutesEnum.auth.path);
+      final hasToken = await AppDependencies.instance.secureTokenStorage.hasToken();
+      if (!mounted) {
+        return;
+      }
+      context.go(hasToken ? AppRoutesEnum.main.path : AppRoutesEnum.auth.path);
     });
   }
 

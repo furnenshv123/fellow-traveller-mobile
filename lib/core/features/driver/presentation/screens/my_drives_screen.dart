@@ -1,202 +1,117 @@
+import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
+import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
+import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_request_model.dart';
+import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/ride_card.dart';
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class DriverMyRidesScreen extends StatefulWidget {
   const DriverMyRidesScreen({super.key});
 
   @override
-  State<DriverMyRidesScreen> createState() => _DriverMyDrivesScreenState();
+  State<DriverMyRidesScreen> createState() => _DriverMyRidesScreenState();
 }
 
-class _DriverMyDrivesScreenState extends State<DriverMyRidesScreen> {
-  final List<_DriverDrive> _myDrives = <_DriverDrive>[
-    _DriverDrive(
-      from: 'Алматы',
-      to: 'Бишкек',
-      date: DateTime(2026, 4, 27),
-      price: 8500,
-      availableSeats: 2,
-      requestsCount: 3,
-      requests: <_PassengerRequest>[
-        _PassengerRequest(
-          name: 'Ольга К.',
-          rating: 4.9,
-          reviews: 89,
-          avatar: '👩',
-        ),
-        _PassengerRequest(
-          name: 'Сергей П.',
-          rating: 4.6,
-          reviews: 45,
-          avatar: '👨',
-        ),
-        _PassengerRequest(
-          name: 'Мария Л.',
-          rating: 4.3,
-          reviews: 21,
-          avatar: '👩',
-        ),
-      ],
-    ),
-  ];
+class _DriverMyRidesScreenState extends State<DriverMyRidesScreen> {
+  late Future<List<RideModel>> _ridesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  void _load() {
+    _ridesFuture = AppDependencies.instance.ridesRepository.getMyRides();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: AppColors.darkBg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E2333),
+        backgroundColor: AppColors.cardDark,
         elevation: 0,
         title: const Text(
           'Мои поездки',
           style: TextStyle(
-            color: Color(0xFFF5F5F5),
-            fontSize: 24,
+            color: AppColors.textVeryLight,
+            fontSize: 22,
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: false,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: FilledButton.tonal(
-              onPressed: () {},
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFEAF2FF),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                '+ Создать',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1783FF),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _myDrives.length,
-        itemBuilder: (BuildContext context, int index) {
-          final _DriverDrive drive = _myDrives[index];
-          return GestureDetector(
-            onTap: () {
-              _showDriveRequests(context, drive);
-            },
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const <BoxShadow>[
-                  BoxShadow(
-                    color: Color(0x16000000),
-                    blurRadius: 14,
-                    offset: Offset(0, 4),
-                  ),
-                ],
+      body: FutureBuilder<List<RideModel>>(
+        future: _ridesFuture,
+        builder: (BuildContext context, AsyncSnapshot<List<RideModel>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.accentBlue),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                'Не удалось загрузить поездки',
+                style: TextStyle(color: AppColors.textSecondary),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFEAF2FF),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.directions_car,
-                            color: Color(0xFF176DFF),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                '${drive.from} → ${drive.to}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF1A1D24),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _formatDate(drive.date),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF667085),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
+            );
+          }
+
+          final rides = snapshot.data ?? <RideModel>[];
+
+          if (rides.isEmpty) {
+            return const Center(
+              child: Text(
+                'Создайте поездку на главной вкладке',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              setState(_load);
+              await _ridesFuture;
+            },
+            color: AppColors.accentBlue,
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: rides.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (BuildContext context, int index) {
+                final ride = rides[index];
+                return RideCard(
+                  ride: ride,
+                  subtitle: '${ride.date} · ${ride.time} · ${ride.availablePlaces} мест',
+                  trailing: ride.pendingRequestsCount > 0
+                      ? Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Text(
-                              '${drive.price} тг',
+                              '${ride.price.toInt()} ₸',
                               style: const TextStyle(
-                                color: Color(0xFF0E7A36),
-                                fontSize: 16,
+                                color: AppColors.successGreen,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${drive.availableSeats} мест',
+                              '${ride.pendingRequestsCount} запросов',
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFF667085),
-                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFE67E22),
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFEF3E5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          const Icon(
-                            Icons.person_add_rounded,
-                            size: 18,
-                            color: Color(0xFFE67E22),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${drive.requestsCount} новых запросов',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFE67E22),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                        )
+                      : null,
+                  onTap: () => _showRequests(context, ride),
+                );
+              },
             ),
           );
         },
@@ -204,171 +119,58 @@ class _DriverMyDrivesScreenState extends State<DriverMyRidesScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return '$day.$month.${date.year}';
-  }
+  Future<void> _showRequests(BuildContext context, RideModel ride) async {
+    final repository = AppDependencies.instance.ridesRepository;
+    final requests = await repository.getRideRequests(ride.id);
 
-  void _showDriveRequests(BuildContext context, _DriverDrive drive) {
-    showModalBottomSheet(
+    if (!context.mounted) {
+      return;
+    }
+
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppColors.cardDark,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           expand: false,
-          initialChildSize: 0.75,
-          maxChildSize: 0.95,
+          initialChildSize: 0.7,
+          maxChildSize: 0.92,
           builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(24),
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Запросы пассажиров (${drive.requests.length})',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1D24),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.close_rounded),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: drive.requests.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final _PassengerRequest request = drive.requests[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        request.avatar,
-                                        style: const TextStyle(fontSize: 24),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          request.name,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            color: Color(0xFF1A1D24),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: <Widget>[
-                                            const Icon(
-                                              Icons.star_rounded,
-                                              size: 16,
-                                              color: Color(0xFFFFC107),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${request.rating} (${request.reviews})',
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xFF667085),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: FilledButton.tonal(
-                                      onPressed: () {},
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: const Color(0xFFFFEBEE),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Отклонить',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFFC62828),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: FilledButton(
-                                      onPressed: () {},
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: const Color(0xFF1783FF),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Принять',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                  Text(
+                    'Запросы · ${ride.routeLabel}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textLight,
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: requests.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Пока нет запросов',
+                              style: TextStyle(color: AppColors.textGray),
+                            ),
+                          )
+                        : ListView.separated(
+                            controller: scrollController,
+                            itemCount: requests.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 10),
+                            itemBuilder: (BuildContext context, int index) {
+                              final request = requests[index];
+                              return _PassengerRequestTile(request: request);
+                            },
+                          ),
                   ),
                 ],
               ),
@@ -380,36 +182,70 @@ class _DriverMyDrivesScreenState extends State<DriverMyRidesScreen> {
   }
 }
 
-class _DriverDrive {
-  _DriverDrive({
-    required this.from,
-    required this.to,
-    required this.date,
-    required this.price,
-    required this.availableSeats,
-    required this.requestsCount,
-    required this.requests,
-  });
+class _PassengerRequestTile extends StatelessWidget {
+  const _PassengerRequestTile({required this.request});
 
-  final String from;
-  final String to;
-  final DateTime date;
-  final int price;
-  final int availableSeats;
-  final int requestsCount;
-  final List<_PassengerRequest> requests;
-}
+  final DriverPassengerRequestModel request;
 
-class _PassengerRequest {
-  _PassengerRequest({
-    required this.name,
-    required this.rating,
-    required this.reviews,
-    required this.avatar,
-  });
-
-  final String name;
-  final double rating;
-  final int reviews;
-  final String avatar;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.inputDark,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            request.passengerName,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textLight,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${request.seatsRequested} мест · ${request.status.labelRu}',
+            style: const TextStyle(color: AppColors.textGray, fontSize: 13),
+          ),
+          if (request.passengerRating != null) ...<Widget>[
+            const SizedBox(height: 4),
+            Text(
+              'Рейтинг ${request.passengerRating}',
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFC62828),
+                    side: const BorderSide(color: Color(0x44C62828)),
+                  ),
+                  child: const Text('Отклонить'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  onPressed: () {},
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.accentBlue,
+                  ),
+                  child: const Text('Принять'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
