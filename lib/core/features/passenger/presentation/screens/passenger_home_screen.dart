@@ -1,11 +1,14 @@
+import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
 import 'package:fellow_traveller_mobile/core/features/passenger/presentation/bloc/passenger_home_bloc.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/point_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/point_search_field.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/ride_card.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/profile_ui_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class PassengerHomeScreen extends StatefulWidget {
   const PassengerHomeScreen({super.key});
@@ -67,19 +70,8 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBg,
-      appBar: AppBar(
-        backgroundColor: AppColors.cardDark,
-        elevation: 0,
-        title: const Text(
-          'Поиск поездок',
-          style: TextStyle(
-            color: AppColors.textVeryLight,
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      backgroundColor: Colors.transparent,
+
       body: BlocConsumer<PassengerHomeBloc, PassengerHomeState>(
         listener: (BuildContext context, PassengerHomeState state) {
           if (state is PassengerHomeReady && state.errorMessage != null) {
@@ -97,7 +89,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             onRefresh: () async {
               context.read<PassengerHomeBloc>().add(const PassengerHomeStarted());
             },
-            color: AppColors.accentBlue,
+            color: AppColors.primary,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: <Widget>[
@@ -108,7 +100,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textLight,
+                    color: AppColors.textBody,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -116,7 +108,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
                     child: Center(
-                      child: CircularProgressIndicator(color: AppColors.accentBlue),
+                      child: CircularProgressIndicator(color: AppColors.primary),
                     ),
                   )
                 else if (ready.hasSearched && ready.results.isEmpty)
@@ -143,9 +135,9 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: AppColors.surface.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -166,7 +158,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                 _from = _to;
                 _to = temp;
               }),
-              icon: const Icon(Icons.swap_vert_rounded, color: AppColors.accentBlue),
+              icon: const Icon(Icons.swap_vert_rounded, color: AppColors.primary),
             ),
           ),
           PointSearchField(
@@ -193,18 +185,18 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.inputDark,
+                color: AppColors.inputFill,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.inputBorder),
               ),
               child: Row(
                 children: <Widget>[
-                  const Icon(Icons.calendar_month_outlined, color: AppColors.accentBlue),
+                  const Icon(Icons.calendar_month_outlined, color: AppColors.primary),
                   const SizedBox(width: 10),
                   Text(
                     _formatDisplayDate(_dateIso),
                     style: const TextStyle(
-                      color: AppColors.textLight,
+                      color: AppColors.textBody,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -217,7 +209,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
           FilledButton(
             onPressed: state.isSearching ? null : _submitSearch,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.accentBlue,
+              backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -235,22 +227,33 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: AppColors.surface.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Text(
         message,
         textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textGray, fontSize: 15),
+        style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
       ),
+    );
+  }
+
+  void _openDriverProfile(RideModel ride) {
+    final profileId = ride.driverProfileId;
+    if (profileId == null) {
+      return;
+    }
+    context.push(
+      AppRoutesEnum.userDriverProfile.pathWithProfileId(profileId),
+      extra: ProfileUiMapper.fromRide(ride),
     );
   }
 
   void _showRideDetails(BuildContext context, RideModel ride) {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.cardDark,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -266,31 +269,59 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textLight,
+                  color: AppColors.textBody,
                 ),
               ),
               const SizedBox(height: 12),
               if (ride.driverName != null)
-                Text(
-                  'Водитель: ${ride.driverName}',
-                  style: const TextStyle(color: AppColors.textGray),
+                InkWell(
+                  onTap: ride.driverProfileId != null
+                      ? () {
+                          Navigator.pop(context);
+                          _openDriverProfile(ride);
+                        }
+                      : null,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          'Водитель: ${ride.driverName}',
+                          style: TextStyle(
+                            color: ride.driverProfileId != null
+                                ? AppColors.primary
+                                : AppColors.textMuted,
+                            fontWeight: ride.driverProfileId != null
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                        if (ride.driverProfileId != null)
+                          const Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: AppColors.primary,
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               if (ride.driverRating != null) ...<Widget>[
                 const SizedBox(height: 4),
                 Text(
                   'Рейтинг: ${ride.driverRating}',
-                  style: const TextStyle(color: AppColors.textGray),
+                  style: const TextStyle(color: AppColors.textMuted),
                 ),
               ],
               const SizedBox(height: 8),
               Text(
-                '${ride.date} · ${ride.time} · ${ride.availablePlaces} мест · ${ride.price.toInt()} ₸',
+                '${ride.date} · ${ride.time} · ${ride.availablePlaces} мест · ${ride.price.toInt()}',
                 style: const TextStyle(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: () => Navigator.pop(context),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.accentBlue),
+                style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
                 child: const Text('Закрыть'),
               ),
             ],

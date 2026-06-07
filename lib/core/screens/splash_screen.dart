@@ -1,5 +1,5 @@
-import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
-import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/profile_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -45,11 +45,11 @@ class _SplashScreenState extends State<SplashScreen>
       if (!mounted) {
         return;
       }
-      final hasToken = await AppDependencies.instance.secureTokenStorage.hasToken();
+      final route = await ProfileNavigation.resolveSplashRoute();
       if (!mounted) {
         return;
       }
-      context.go(hasToken ? AppRoutesEnum.main.path : AppRoutesEnum.auth.path);
+      context.go(route);
     });
   }
 
@@ -65,12 +65,12 @@ class _SplashScreenState extends State<SplashScreen>
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: <Color>[
-              Color(0xFF0D3254),
-              Color(0xFF1A5A8E),
-              Color(0xFF103452),
+              AppColors.primary,
+              AppColors.scaffoldDarkMid,
+              AppColors.scaffoldDark,
             ],
           ),
         ),
@@ -90,16 +90,10 @@ class _SplashScreenState extends State<SplashScreen>
                         height: 120,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.12),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: const Color(
-                                0xFF1A84FF,
-                              ).withValues(alpha: 0.45),
-                              blurRadius: 34,
-                              spreadRadius: 2,
-                            ),
-                          ],
+                          color: Colors.white.withValues(alpha: 0.15),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.25),
+                          ),
                         ),
                         padding: const EdgeInsets.all(28),
                         child: SvgPicture.asset('assets/images/logo.svg'),
@@ -113,19 +107,19 @@ class _SplashScreenState extends State<SplashScreen>
                       'Poputka',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 42,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.7,
+                        fontSize: 38,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Твоя дорога, твоя компания',
                     style: TextStyle(
-                      color: Color(0xCFFFFFFF),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.white.withValues(alpha: 0.82),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],

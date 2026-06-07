@@ -19,7 +19,7 @@ class RideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.cardDark,
+      color: AppColors.surface,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -28,7 +28,7 @@ class RideCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder),
+            border: Border.all(color: AppColors.border),
           ),
           child: Row(
             children: <Widget>[
@@ -36,10 +36,10 @@ class RideCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColors.accentBlue.withValues(alpha: 0.15),
+                  color: AppColors.primaryLight.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.directions_car, color: AppColors.accentBlue),
+                child: const Icon(Icons.directions_car, color: AppColors.primary),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -51,7 +51,7 @@ class RideCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textLight,
+                        color: AppColors.textBody,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -59,7 +59,7 @@ class RideCard extends StatelessWidget {
                       subtitle ?? _defaultSubtitle(ride),
                       style: const TextStyle(
                         fontSize: 13,
-                        color: AppColors.textGray,
+                        color: AppColors.textMuted,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -68,9 +68,9 @@ class RideCard extends StatelessWidget {
               ),
               trailing ??
                   Text(
-                    '${ride.price.toInt()} ₸',
+                    '${ride.price.toInt()}',
                     style: const TextStyle(
-                      color: AppColors.successGreen,
+                      color: AppColors.primary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),

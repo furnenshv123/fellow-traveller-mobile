@@ -25,6 +25,7 @@ class RidesMockData {
       availablePlaces: 2,
       driverName: 'Нурсултан',
       driverRating: 4.8,
+      driverProfileId: 1,
       distanceKm: '235',
     ),
     RideModel(
@@ -37,6 +38,7 @@ class RidesMockData {
       availablePlaces: 3,
       driverName: 'Азамат',
       driverRating: 4.6,
+      driverProfileId: 2,
       distanceKm: '180',
     ),
     RideModel(
@@ -49,6 +51,7 @@ class RidesMockData {
       availablePlaces: 1,
       driverName: 'Дана',
       driverRating: 4.9,
+      driverProfileId: 3,
       distanceKm: '220',
     ),
     RideModel(
@@ -103,6 +106,9 @@ class RidesMockData {
       driverName: 'Нурсултан',
       driverRating: 4.8,
       driverPhone: '+7 700 111 2233',
+      driverProfileId: 1,
+      driverCarModel: 'Toyota Camry',
+      driverCarColor: 'Белый',
     ),
     PassengerRideRequestModel(
       id: 302,
@@ -129,6 +135,7 @@ class RidesMockData {
       price: 5000,
       driverName: 'Дана',
       driverRating: 4.5,
+      driverProfileId: 2,
     ),
   ];
 
@@ -137,6 +144,7 @@ class RidesMockData {
     201: <DriverPassengerRequestModel>[
       const DriverPassengerRequestModel(
         id: 401,
+        passengerProfileId: 11,
         status: RideRequestStatus.pending,
         seatsRequested: 1,
         passengerName: 'Ольга К.',
@@ -145,6 +153,7 @@ class RidesMockData {
       ),
       const DriverPassengerRequestModel(
         id: 402,
+        passengerProfileId: 12,
         status: RideRequestStatus.pending,
         seatsRequested: 2,
         passengerName: 'Сергей П.',
@@ -152,6 +161,7 @@ class RidesMockData {
       ),
       const DriverPassengerRequestModel(
         id: 403,
+        passengerProfileId: 13,
         status: RideRequestStatus.pending,
         seatsRequested: 1,
         passengerName: 'Мария Л.',

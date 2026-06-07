@@ -164,6 +164,10 @@ class RidesRepository {
       driverName: map['driver_name'] as String?,
       driverRating: (map['driver_rating'] as num?)?.toDouble(),
       driverPhone: map['driver_phone'] as String?,
+      driverProfileId: map['driver_profile_id'] as int?,
+      driverPhoto: map['driver_photo'] as String?,
+      driverCarModel: map['driver_car_model'] as String?,
+      driverCarColor: map['driver_car_color'] as String?,
     );
   }
 
@@ -171,11 +175,13 @@ class RidesRepository {
     final map = json as Map<String, dynamic>;
     return DriverPassengerRequestModel(
       id: map['id'] as int,
+      passengerProfileId: map['passenger_profile_id'] as int? ?? 0,
       status: RideRequestStatusX.fromApi(map['status'] as String?),
       seatsRequested: map['seats_requested'] as int? ?? 1,
       passengerName: map['passenger_name'] as String? ?? 'Пассажир',
       passengerRating: (map['passenger_rating'] as num?)?.toDouble(),
       passengerPhone: map['passenger_phone'] as String?,
+      passengerPhoto: map['passenger_photo'] as String?,
     );
   }
 }

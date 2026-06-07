@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/components/main_screen_background.dart';
 import 'package:fellow_traveller_mobile/core/data/user_session.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
@@ -15,18 +16,27 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget home;
     if (_session.role == UserRole.driver) {
-      return BlocProvider(
+      home = BlocProvider(
         create: (_) => AppDependencies.instance.createDriverHomeBloc()
           ..add(const DriverHomeStarted()),
         child: const DriverHomeScreen(),
       );
+    } else {
+      home = BlocProvider(
+        create: (_) => AppDependencies.instance.createPassengerHomeBloc()
+          ..add(const PassengerHomeStarted()),
+        child: const PassengerHomeScreen(),
+      );
     }
 
-    return BlocProvider(
-      create: (_) => AppDependencies.instance.createPassengerHomeBloc()
-        ..add(const PassengerHomeStarted()),
-      child: const PassengerHomeScreen(),
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        const MainScreenBackground(),
+        home,
+      ],
     );
   }
 }

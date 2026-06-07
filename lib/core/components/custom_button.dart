@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -5,11 +6,11 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.text,
     this.onPressed,
-    this.backgroundColor = const Color(0xFF176DFF),
+    this.backgroundColor = AppColors.primary,
     this.textColor = Colors.white,
     this.fontSize = 16,
-    this.fontWeight = FontWeight.w700,
-    this.borderRadius = 24,
+    this.fontWeight = FontWeight.w600,
+    this.borderRadius = AppColors.radiusMd,
     this.padding = const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
     this.isOutlined = false,
   });

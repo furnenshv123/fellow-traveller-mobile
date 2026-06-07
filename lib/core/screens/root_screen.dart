@@ -62,18 +62,34 @@ class _RootScreenState extends State<RootScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: AppColors.background,
       body: widget.child,
       bottomNavigationBar: GlassBottomBar(
+        selectedIconColor: AppColors.primary,
+        unselectedIconColor: AppColors.textSecondary,
+        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.85),
         glassSettings: LiquidGlassSettings(
-          glassColor: const Color(0xFF1E2333),
-          visibility: 0.8
+          blur: 20,
+          thickness: 20,
+          glassColor: AppColors.surface.withValues(alpha: 0.72),
+          lightIntensity: 0.6,
+          ambientStrength: 0.45,
+          saturation: 1.1,
         ),
-        tabs: [
-          GlassBottomBarTab(icon: Icon(CupertinoIcons.home), label: 'Главная'),
-          GlassBottomBarTab(icon: Icon(Icons.drive_eta), label: 'Мои поездки'),
+        tabs: const <GlassBottomBarTab>[
+          GlassBottomBarTab(
+            icon: Icon(CupertinoIcons.home),
+            activeIcon: Icon(CupertinoIcons.house_fill),
+            label: 'Главная',
+          ),
+          GlassBottomBarTab(
+            icon: Icon(Icons.drive_eta_outlined),
+            activeIcon: Icon(Icons.drive_eta),
+            label: 'Мои поездки',
+          ),
           GlassBottomBarTab(
             icon: Icon(CupertinoIcons.person),
+            activeIcon: Icon(CupertinoIcons.person_fill),
             label: 'Профиль',
           ),
         ],

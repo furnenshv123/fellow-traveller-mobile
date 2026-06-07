@@ -5,10 +5,10 @@ import 'package:fellow_traveller_mobile/core/utils/theme/theme_implementation.da
 
 class LightTheme implements ThemeImplementation {
   @override
-  Color get approSecondary => AppColors.primaryColor;
+  Color get approSecondary => AppColors.primary;
 
   @override
-  Color get welcomeBackgroundColor => AppColors.backgroundColor;
+  Color get welcomeBackgroundColor => AppColors.background;
 
   @override
   String get bgMain => 'assets/images/bg_img.png';
@@ -20,46 +20,46 @@ class LightTheme implements ThemeImplementation {
   String get altAvatar => 'assets/images/alt-avatar.svg';
 
   @override
-  Color get monoFormive => AppColors.grayColor;
+  Color get monoFormive => AppColors.surfaceMuted;
 
   @override
-  Color get systemGray => AppColors.grayColor;
+  Color get systemGray => AppColors.surfaceMuted;
 
   @override
-  Color get deepKupol => AppColors.grayColor;
+  Color get deepKupol => AppColors.surfaceMuted;
 
   @override
-  Color get monoWhyWhite => AppColors.grayColor;
+  Color get monoWhyWhite => AppColors.surfaceMuted;
 
   @override
-  Color get deepGlobo => AppColors.grayColor;
+  Color get deepGlobo => AppColors.surfaceMuted;
 
   @override
-  Color get deepAppro => AppColors.grayColor;
+  Color get deepAppro => AppColors.surfaceMuted;
 
   @override
-  Color get blueOblak => AppColors.primaryColor;
+  Color get blueOblak => AppColors.primary;
 
   @override
-  Color get blueSkuka => AppColors.primaryColor;
+  Color get blueSkuka => AppColors.primary;
 
-  final blueLogo = AppColors.primaryColor;
-
-  @override
-  Color get addonsAgtung => AppColors.primaryColor;
+  final blueLogo = AppColors.primary;
 
   @override
-  Color get deepLighta => AppColors.primaryColor;
+  Color get addonsAgtung => AppColors.primary;
 
   @override
-  Color get blueKrak => AppColors.primaryColor;
+  Color get deepLighta => AppColors.primary;
 
   @override
-  Color get primarySula => AppColors.primaryColor;
+  Color get blueKrak => AppColors.primary;
 
   @override
-  Color get deepLogo => AppColors.primaryColor;
+  Color get primarySula => AppColors.primary;
 
   @override
-  Color get bottomSheetBackground => AppColors.moonLightBlueColor;
+  Color get deepLogo => AppColors.primary;
+
+  @override
+  Color get bottomSheetBackground => AppColors.primaryDark;
 }

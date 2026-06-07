@@ -80,19 +80,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBg,
-      appBar: AppBar(
-        backgroundColor: AppColors.cardDark,
-        elevation: 0,
-        title: const Text(
-          'Создать поездку',
-          style: TextStyle(
-            color: AppColors.textVeryLight,
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      backgroundColor: Colors.transparent,
+      
       body: BlocConsumer<DriverHomeBloc, DriverHomeState>(
         listener: (BuildContext context, DriverHomeState state) {
           if (state is DriverHomeReady) {
@@ -117,9 +106,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.cardDark,
+                  color: AppColors.surface.withValues(alpha: 0.92),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -155,7 +144,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           child: Text(
                             _formatDisplayDate(_dateIso),
                             style: const TextStyle(
-                              color: AppColors.textLight,
+                              color: AppColors.textBody,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -167,7 +156,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       label: 'Время (ЧЧ:ММ)',
                       child: TextField(
                         controller: _timeController,
-                        style: const TextStyle(color: AppColors.textLight),
+                        style: const TextStyle(color: AppColors.textBody),
                         decoration: _fieldDecoration(),
                       ),
                     ),
@@ -180,7 +169,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             child: TextField(
                               controller: _seatsController,
                               keyboardType: TextInputType.number,
-                              style: const TextStyle(color: AppColors.textLight),
+                              style: const TextStyle(color: AppColors.textBody),
                               decoration: _fieldDecoration(),
                             ),
                           ),
@@ -188,11 +177,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _labeledField(
-                            label: 'Цена, ₸',
+                            label: 'Цена, ',
                             child: TextField(
                               controller: _priceController,
                               keyboardType: TextInputType.number,
-                              style: const TextStyle(color: AppColors.textLight),
+                              style: const TextStyle(color: AppColors.textBody),
                               decoration: _fieldDecoration(),
                             ),
                           ),
@@ -203,7 +192,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     FilledButton(
                       onPressed: ready.isSubmitting ? null : _submit,
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.accentBlue,
+                        backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: ready.isSubmitting
@@ -230,12 +219,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textLight,
+                    color: AppColors.primaryLight,
                   ),
                 ),
                 const SizedBox(height: 10),
                 RideCard(ride: ready.lastCreatedRide!),
               ],
+            const SizedBox(height: 100),
             ],
           );
         },
@@ -266,7 +256,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.inputDark,
+        color: AppColors.inputFill,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.inputBorder),
       ),
@@ -277,7 +267,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   InputDecoration _fieldDecoration() {
     return InputDecoration(
       filled: true,
-      fillColor: AppColors.inputDark,
+      fillColor: AppColors.inputFill,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.inputBorder),

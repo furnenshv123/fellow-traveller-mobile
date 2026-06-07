@@ -7,6 +7,8 @@ import 'package:fellow_traveller_mobile/core/features/auth/data/auth_repository.
 import 'package:fellow_traveller_mobile/core/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fellow_traveller_mobile/core/features/driver/presentation/bloc/driver_home_bloc.dart';
 import 'package:fellow_traveller_mobile/core/features/passenger/presentation/bloc/passenger_home_bloc.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/data/profile_repository.dart';
+import 'package:fellow_traveller_mobile/core/features/ratings/data/ratings_repository.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/rides_repository.dart';
 import 'package:fellow_traveller_mobile/core/interceptors/dio_interceptor.dart';
 
@@ -22,6 +24,8 @@ class AppDependencies {
   late final ApiClientAuth authApi;
   late final AuthRepository authRepository;
   late final RidesRepository ridesRepository;
+  late final ProfileRepository profileRepository;
+  late final RatingsRepository ratingsRepository;
 
   Future<void> init() async {
     secureTokenStorage = SecureTokenStorage();
@@ -37,6 +41,8 @@ class AppDependencies {
       userSession: userSession,
     );
     ridesRepository = RidesRepository(dio: dio);
+    profileRepository = ProfileRepository(dio: dio, userSession: userSession);
+    ratingsRepository = RatingsRepository(dio: dio);
   }
 
   AuthBloc createAuthBloc() => AuthBloc(authRepository);

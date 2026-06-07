@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class UserSessionStorage {
   static const _roleKey = 'current_role';
   static const _emailKey = 'user_email';
+  static const _profileCompleteKey = 'profile_complete';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -17,8 +18,20 @@ class UserSessionStorage {
 
   Future<String?> getEmail() => _storage.read(key: _emailKey);
 
+  Future<void> saveProfileComplete(bool complete) =>
+      _storage.write(key: _profileCompleteKey, value: complete.toString());
+
+  Future<bool?> getProfileComplete() async {
+    final value = await _storage.read(key: _profileCompleteKey);
+    if (value == null) {
+      return null;
+    }
+    return value == 'true';
+  }
+
   Future<void> clear() async {
     await _storage.delete(key: _roleKey);
     await _storage.delete(key: _emailKey);
+    await _storage.delete(key: _profileCompleteKey);
   }
 }

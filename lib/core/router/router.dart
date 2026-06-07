@@ -5,6 +5,13 @@ import 'package:fellow_traveller_mobile/core/features/driver/presentation/screen
 import 'package:fellow_traveller_mobile/core/features/driver/presentation/screens/profile_screen.dart';
 import 'package:fellow_traveller_mobile/core/features/passenger/presentation/screens/my_drives_screen.dart';
 import 'package:fellow_traveller_mobile/core/features/passenger/presentation/screens/profile_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/presentation/screens/create_profile_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/presentation/screens/user_driver_profile_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/presentation/screens/user_passenger_profile_screen.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/data/models/driver_profile_model.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/data/models/passenger_profile_model.dart';
+import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
+import 'package:fellow_traveller_mobile/core/features/rides/presentation/screens/driver_ride_requests_screen.dart';
 import 'package:fellow_traveller_mobile/core/router/role_shell.dart';
 import 'package:fellow_traveller_mobile/core/screens/main_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/root_screen.dart';
@@ -17,7 +24,27 @@ GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 GlobalKey<NavigatorState> shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
-  redirect: (context, state) => null,
+  redirect: (BuildContext context, GoRouterState state) {
+    final path = state.uri.path;
+    final session = AppDependencies.instance.userSession;
+
+    if (path == AppRoutesEnum.splash.path) {
+      return null;
+    }
+
+    if (session.needsProfileSetup &&
+        path != AppRoutesEnum.createProfile.path &&
+        path != AppRoutesEnum.auth.path) {
+      return AppRoutesEnum.createProfile.path;
+    }
+
+    if (!session.needsProfileSetup &&
+        path == AppRoutesEnum.createProfile.path) {
+      return AppRoutesEnum.main.path;
+    }
+
+    return null;
+  },
   navigatorKey: rootNavigatorKey,
   initialLocation: AppRoutesEnum.splash.path,
   routes: <RouteBase>[
@@ -36,6 +63,37 @@ final router = GoRouter(
           create: (_) => AppDependencies.instance.createAuthBloc(),
           child: const AuthScreen(),
         );
+      },
+    ),
+    GoRoute(
+      path: AppRoutesEnum.createProfile.path,
+      name: AppRoutesEnum.createProfile.name,
+      builder: (BuildContext context, GoRouterState state) {
+        return const CreateProfileScreen();
+      },
+    ),
+    GoRoute(
+      path: AppRoutesEnum.driverRideRequests.path,
+      name: AppRoutesEnum.driverRideRequests.name,
+      builder: (BuildContext context, GoRouterState state) {
+        final ride = state.extra! as RideModel;
+        return DriverRideRequestsScreen(ride: ride);
+      },
+    ),
+    GoRoute(
+      path: '${AppRoutesEnum.userDriverProfile.path}/:profileId',
+      name: AppRoutesEnum.userDriverProfile.name,
+      builder: (BuildContext context, GoRouterState state) {
+        final profile = state.extra! as DriverProfileModel;
+        return UserDriverProfileScreen(profile: profile);
+      },
+    ),
+    GoRoute(
+      path: '${AppRoutesEnum.userPassengerProfile.path}/:profileId',
+      name: AppRoutesEnum.userPassengerProfile.name,
+      builder: (BuildContext context, GoRouterState state) {
+        final profile = state.extra! as PassengerProfileModel;
+        return UserPassengerProfileScreen(profile: profile);
       },
     ),
     StatefulShellRoute.indexedStack(

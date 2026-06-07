@@ -5,7 +5,6 @@ import 'package:fellow_traveller_mobile/core/features/rides/data/models/point_mo
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
-/// City autocomplete: text field + server suggestions, no BLoC.
 class PointSearchField extends StatefulWidget {
   const PointSearchField({
     required this.label,
@@ -170,7 +169,7 @@ class _PointSearchFieldState extends State<PointSearchField> {
           focusNode: _focusNode,
           onChanged: _onTextChanged,
           style: const TextStyle(
-            color: AppColors.textLight,
+            color: AppColors.textBody,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -180,7 +179,7 @@ class _PointSearchFieldState extends State<PointSearchField> {
               color: AppColors.textSecondary.withValues(alpha: 0.75),
               fontWeight: FontWeight.w500,
             ),
-            prefixIcon: Icon(widget.icon, color: AppColors.accentBlue, size: 22),
+            prefixIcon: Icon(widget.icon, color: AppColors.primary, size: 22),
             suffixIcon: _loading
                 ? const Padding(
                     padding: EdgeInsets.all(12),
@@ -189,13 +188,13 @@ class _PointSearchFieldState extends State<PointSearchField> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.accentBlue,
+                        color: AppColors.primary,
                       ),
                     ),
                   )
                 : null,
             filled: true,
-            fillColor: AppColors.inputDark,
+            fillColor: AppColors.inputFill,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.inputBorder),
@@ -243,9 +242,9 @@ class _SuggestionsPanel extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 6),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.border),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.25),
@@ -288,7 +287,7 @@ class _SuggestionsPanel extends StatelessWidget {
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: suggestions.length,
-      separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.cardBorder),
+      separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.border),
       itemBuilder: (BuildContext context, int index) {
         final point = suggestions[index];
         return Material(
@@ -302,14 +301,14 @@ class _SuggestionsPanel extends StatelessWidget {
                   Icon(
                     Icons.place_outlined,
                     size: 20,
-                    color: AppColors.accentBlue.withValues(alpha: 0.9),
+                    color: AppColors.primary.withValues(alpha: 0.9),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       point.name,
                       style: const TextStyle(
-                        color: AppColors.textLight,
+                        color: AppColors.textBody,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -392,12 +391,12 @@ class _MessageRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Row(
         children: <Widget>[
-          Icon(icon, size: 20, color: AppColors.textGray),
+          Icon(icon, size: 20, color: AppColors.textMuted),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(color: AppColors.textGray, fontSize: 14),
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
             ),
           ),
         ],

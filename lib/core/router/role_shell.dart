@@ -3,7 +3,6 @@ import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
 import 'package:flutter/material.dart';
 
-/// Picks passenger or driver widget based on persisted session role.
 class RoleShell extends StatelessWidget {
   const RoleShell({
     required this.passenger,

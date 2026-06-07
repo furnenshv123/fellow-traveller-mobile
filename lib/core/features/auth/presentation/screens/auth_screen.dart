@@ -1,6 +1,6 @@
 import 'package:fellow_traveller_mobile/core/components/custom_button.dart';
-import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
+import 'package:fellow_traveller_mobile/core/utils/profile_navigation.dart';
 import 'package:fellow_traveller_mobile/core/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/gestures.dart';
@@ -33,9 +33,15 @@ class _AuthScreenState extends State<AuthScreen> {
       listenWhen: (previous, current) =>
           current is AuthSuccess ||
           (current is AuthInitial && current.generalError != null),
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is AuthSuccess) {
-          context.go(AppRoutesEnum.main.path);
+          final route = await ProfileNavigation.resolvePostAuthRoute(
+            authResponse: state.response,
+          );
+          if (!context.mounted) {
+            return;
+          }
+          context.go(route);
           return;
         }
 
@@ -64,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: <Color>[AppColors.darkBg, AppColors.darkBgGradient],
+                colors: <Color>[AppColors.scaffoldDark, AppColors.scaffoldDarkMid],
               ),
             ),
             child: Center(
@@ -72,14 +78,14 @@ class _AuthScreenState extends State<AuthScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.cardDark,
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: AppColors.cardBorder),
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(AppColors.radiusLg),
+                    border: Border.all(color: AppColors.border),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        blurRadius: 24,
-                        spreadRadius: 4,
+                        color: AppColors.scaffoldDark.withValues(alpha: 0.12),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
@@ -91,9 +97,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       Text(
                         form.isLogin ? 'Вход' : 'Регистрация',
                         style: const TextStyle(
-                          color: AppColors.textVeryLight,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 28),
@@ -118,7 +124,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             _passwordVisible
                                 ? Icons.visibility_rounded
                                 : Icons.visibility_off_rounded,
-                            color: AppColors.accentBlue,
+                            color: AppColors.primary,
                           ),
                           onPressed: () {
                             setState(() {
@@ -131,7 +137,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       const Text(
                         'Роль',
                         style: TextStyle(
-                          color: AppColors.textLight,
+                          color: AppColors.textBody,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -139,8 +145,8 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 12),
                       Container(
                         decoration: BoxDecoration(
-                          color: AppColors.inputDark,
-                          borderRadius: BorderRadius.circular(12),
+                          color: AppColors.inputFill,
+                          borderRadius: BorderRadius.circular(AppColors.radiusMd),
                           border: Border.all(color: AppColors.inputBorder),
                         ),
                         padding: const EdgeInsets.symmetric(
@@ -190,12 +196,12 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 28),
                       CustomButton(
                         text: form.isLogin ? 'Войти' : 'Зарегистрироваться',
-                        borderRadius: 12,
+                        borderRadius: AppColors.radiusMd,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         onPressed: form.isLoading ? () {} : _submit,
                         backgroundColor: form.isLoading
                             ? AppColors.inputBorder
-                            : AppColors.accentBlue,
+                            : AppColors.primary,
                       ),
                       if (form.isLoading) ...<Widget>[
                         const SizedBox(height: 16),
@@ -205,7 +211,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: AppColors.accentBlue,
+                              color: AppColors.primary,
                             ),
                           ),
                         ),
@@ -219,8 +225,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                 text: form.isLogin
                                     ? 'Нет аккаунта? '
                                     : 'Есть аккаунт? ',
-                                style: const TextStyle(
-                                  color: Color(0xFFB0B5C0),
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
                                   fontSize: 14,
                                 ),
                               ),
@@ -229,7 +235,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ? 'Зарегистрироваться'
                                     : 'Войти',
                                 style: const TextStyle(
-                                  color: AppColors.accentBlue,
+                                  color: AppColors.primary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   decoration: TextDecoration.underline,
@@ -296,7 +302,7 @@ class _AuthTextField extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: AppColors.textLight,
+            color: AppColors.textBody,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -312,7 +318,7 @@ class _AuthTextField extends StatelessWidget {
             hintStyle: const TextStyle(color: AppColors.textSecondary),
             errorText: errorText,
             filled: true,
-            fillColor: AppColors.inputDark,
+            fillColor: AppColors.inputFill,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.inputBorder),
@@ -341,7 +347,7 @@ class _AuthTextField extends StatelessWidget {
             suffixIcon: suffixIcon,
           ),
           style: const TextStyle(
-            color: AppColors.textLight,
+            color: AppColors.textBody,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -376,8 +382,8 @@ class _RoleOption extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(
                 color: isSelected
-                    ? AppColors.accentBlue
-                    : const Color(0xFF6A7080),
+                    ? AppColors.primary
+                    : AppColors.textMuted,
                 width: 2,
               ),
             ),
@@ -386,7 +392,7 @@ class _RoleOption extends StatelessWidget {
                     margin: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.accentBlue,
+                      color: AppColors.primary,
                     ),
                   )
                 : null,
@@ -395,7 +401,7 @@ class _RoleOption extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: AppColors.textLight,
+              color: AppColors.textBody,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
@@ -435,7 +441,7 @@ class _PrivacyPolicyCheckbox extends StatelessWidget {
                 onChanged: enabled
                     ? (value) => onChanged(value ?? false)
                     : null,
-                activeColor: AppColors.accentBlue,
+                activeColor: AppColors.primary,
                 side: BorderSide(
                   color: errorText != null
                       ? Theme.of(context).colorScheme.error
@@ -448,7 +454,7 @@ class _PrivacyPolicyCheckbox extends StatelessWidget {
               child: Text.rich(
                 TextSpan(
                   style: const TextStyle(
-                    color: AppColors.textLight,
+                    color: AppColors.textBody,
                     fontSize: 14,
                     height: 1.4,
                   ),
@@ -457,7 +463,7 @@ class _PrivacyPolicyCheckbox extends StatelessWidget {
                     TextSpan(
                       text: 'политику конфиденциальности',
                       style: const TextStyle(
-                        color: AppColors.accentBlue,
+                        color: AppColors.primary,
                         decoration: TextDecoration.underline,
                         fontWeight: FontWeight.w600,
                       ),

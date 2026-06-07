@@ -9,9 +9,11 @@ class UserSession {
 
   UserRole _role = UserRole.passenger;
   String? _email;
+  bool _needsProfileSetup = true;
 
   UserRole get role => _role;
   String? get email => _email;
+  bool get needsProfileSetup => _needsProfileSetup;
 
   bool get isDriver => _role == UserRole.driver;
   bool get isPassenger => _role == UserRole.passenger;
@@ -20,12 +22,14 @@ class UserSession {
     final storedRole = await _storage.getRole();
     _role = UserRoleExtension.fromApiValue(storedRole);
     _email = await _storage.getEmail();
+    _needsProfileSetup = await _storage.getProfileComplete() != true;
   }
 
   Future<void> setFromAuth(AuthResponse response, {String? fallbackRole}) async {
     final roleValue = response.currentRole ?? fallbackRole ?? 'passenger';
     _role = UserRoleExtension.fromApiValue(roleValue);
     _email = response.email;
+    setProfileSetupHintFromAuth(response);
 
     await _storage.saveRole(_role.name);
     if (_email != null) {
@@ -33,9 +37,23 @@ class UserSession {
     }
   }
 
+  void setProfileSetupHintFromAuth(AuthResponse response) {
+    if (_role == UserRole.driver) {
+      _needsProfileSetup = response.hasDriverProfile != true;
+    } else {
+      _needsProfileSetup = response.hasPassengerProfile != true;
+    }
+  }
+
+  Future<void> setProfileComplete(bool complete) async {
+    _needsProfileSetup = !complete;
+    await _storage.saveProfileComplete(complete);
+  }
+
   Future<void> clear() async {
     _role = UserRole.passenger;
     _email = null;
+    _needsProfileSetup = true;
     await _storage.clear();
   }
 }

@@ -1,31 +1,40 @@
 import 'dart:ui';
 
 class AppColors {
-  // Dark theme - Backgrounds
-  static const Color darkBg = Color(0xFF0F1419);
-  static const Color darkBgGradient = Color(0xFF1A1F2E);
-  static const Color cardDark = Color(0xFF1E2333);
-  static const Color cardBorder = Color(0xFF2E3447);
+  // Page backgrounds
+  static const Color background = Color(0xFFF8FAFC);
+  static const Color scaffoldDark = Color(0xFF0F172A);
+  static const Color scaffoldDarkMid = Color(0xFF1E3A8A);
 
-  // Dark theme - Text
-  static const Color textLight = Color(0xFFE0E0E0);
-  static const Color textVeryLight = Color(0xFFF5F5F5);
-  static const Color textSecondary = Color(0xFF8A8E99);
-  static const Color textGray = Color(0xFF667085);
+  // Surfaces (cards, sheets, bars)
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceMuted = Color(0xFFF3F4F6);
+  static const Color border = Color(0xFFE5E7EB);
 
-  // Dark theme - Inputs
-  static const Color inputDark = Color(0xFF2A3142);
-  static const Color inputBorder = Color(0xFF3A4255);
-  static const Color inputFocused = Color(0xFF1783FF);
+  // Text
+  static const Color textPrimary = Color(0xFF111827);
+  static const Color textBody = Color(0xFF1F2937);
+  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textMuted = Color(0xFF9CA3AF);
 
-  // Accents & Status
-  static const Color accentBlue = Color(0xFF1783FF);
-  static const Color successGreen = Color(0xFF51CF66);
-  static const Color successDark = Color(0xFF0E7A36);
+  // Brand / primary blue
+  static const Color primary = Color(0xFF2563EB);
+  static const Color primaryLight = Color(0xFFDBEAFE);
+  static const Color primaryDark = Color(0xFF1E40AF);
 
-  // Light theme (legacy)
-  static const Color primaryColor = Color(0xFF007BFF);
-  static const Color backgroundColor = Color(0xFFF5F5F5);
-  static const Color grayColor = Color(0xFFF0F0F0);
-  static const Color moonLightBlueColor = Color(0xFF164256);
+  // Inputs
+  static const Color inputFill = Color(0xFFF3F4F6);
+  static const Color inputBorder = Color(0xFFD1D5DB);
+  static const Color inputFocused = Color(0xFF2563EB);
+
+  // Other accents & status
+  static const Color accentAmber = Color(0xFFF59E0B);
+  static const Color success = Color(0xFF16A34A);
+  static const Color successDark = Color(0xFF15803D);
+
+  // Corner radii
+  static const double radiusSm = 8;
+  static const double radiusMd = 10;
+  static const double radiusLg = 14;
+  static const double radiusXl = 16;
 }

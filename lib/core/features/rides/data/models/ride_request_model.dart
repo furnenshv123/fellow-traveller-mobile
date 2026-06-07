@@ -26,7 +26,6 @@ extension RideRequestStatusX on RideRequestStatus {
   }
 }
 
-/// Passenger's booking request (GET /ride-requests/my-requests).
 class PassengerRideRequestModel {
   const PassengerRideRequestModel({
     required this.id,
@@ -41,6 +40,10 @@ class PassengerRideRequestModel {
     this.driverName,
     this.driverRating,
     this.driverPhone,
+    this.driverProfileId,
+    this.driverPhoto,
+    this.driverCarModel,
+    this.driverCarColor,
   });
 
   final int id;
@@ -55,28 +58,53 @@ class PassengerRideRequestModel {
   final String? driverName;
   final double? driverRating;
   final String? driverPhone;
+  final int? driverProfileId;
+  final String? driverPhoto;
+  final String? driverCarModel;
+  final String? driverCarColor;
 
   String get routeLabel => '${fromPoint.name} → ${toPoint.name}';
 
   bool get isUpcoming =>
       status == RideRequestStatus.pending || status == RideRequestStatus.accepted;
+
+  bool get canRateDriver {
+    if (status != RideRequestStatus.accepted || driverProfileId == null) {
+      return false;
+    }
+    final parts = date.split('-');
+    if (parts.length != 3) {
+      return false;
+    }
+    final rideDate = DateTime(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    return !rideDate.isAfter(todayDate);
+  }
 }
 
-/// Driver-side passenger request (GET /ride-requests/ride/{id}).
 class DriverPassengerRequestModel {
   const DriverPassengerRequestModel({
     required this.id,
+    required this.passengerProfileId,
     required this.status,
     required this.seatsRequested,
     required this.passengerName,
     this.passengerRating,
     this.passengerPhone,
+    this.passengerPhoto,
   });
 
   final int id;
+  final int passengerProfileId;
   final RideRequestStatus status;
   final int seatsRequested;
   final String passengerName;
   final double? passengerRating;
   final String? passengerPhone;
+  final String? passengerPhoto;
 }
