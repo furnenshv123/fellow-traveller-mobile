@@ -26,11 +26,12 @@ class AppTheme {
       textTheme: textTheme,
       primaryTextTheme: GoogleFonts.sourceSans3TextTheme(base.primaryTextTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surface.withValues(alpha: 0.95),
+        backgroundColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
+        centerTitle: true,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,

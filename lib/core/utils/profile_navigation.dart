@@ -7,6 +7,7 @@ class ProfileNavigation {
 
   static Future<String> resolvePostAuthRoute({
     AuthResponse? authResponse,
+    String completeRoute = '/main',
   }) async {
     final deps = AppDependencies.instance;
     final hasToken = await deps.secureTokenStorage.hasToken();
@@ -15,17 +16,39 @@ class ProfileNavigation {
       return AppRoutesEnum.auth.path;
     }
 
+    return _resolveProfileRoute(
+      authResponse: authResponse,
+      completeRoute: completeRoute,
+    );
+  }
+
+  static Future<String> resolvePostRoleSwitchRoute({
+    required AuthResponse authResponse,
+  }) {
+    return _resolveProfileRoute(
+      authResponse: authResponse,
+      completeRoute: AppRoutesEnum.profile.path,
+    );
+  }
+
+  static Future<String> _resolveProfileRoute({
+    AuthResponse? authResponse,
+    required String completeRoute,
+  }) async {
+    final deps = AppDependencies.instance;
+
     if (authResponse != null) {
       deps.userSession.setProfileSetupHintFromAuth(authResponse);
     }
+
     try {
       final complete = await deps.profileRepository.isProfileComplete();
-      deps.userSession.setProfileComplete(complete);
-      return complete
-          ? AppRoutesEnum.main.path
-          : AppRoutesEnum.createProfile.path;
-    } catch (e) {
-      return AppRoutesEnum.auth.path;
+      await deps.userSession.setProfileComplete(complete);
+      return complete ? completeRoute : AppRoutesEnum.createProfile.path;
+    } catch (_) {
+      return deps.userSession.needsProfileSetup
+          ? AppRoutesEnum.createProfile.path
+          : completeRoute;
     }
   }
 

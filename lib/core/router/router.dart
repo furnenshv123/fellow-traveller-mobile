@@ -8,10 +8,9 @@ import 'package:fellow_traveller_mobile/core/features/passenger/presentation/scr
 import 'package:fellow_traveller_mobile/core/features/profile/presentation/screens/create_profile_screen.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/presentation/screens/user_driver_profile_screen.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/presentation/screens/user_passenger_profile_screen.dart';
-import 'package:fellow_traveller_mobile/core/features/profile/data/models/driver_profile_model.dart';
-import 'package:fellow_traveller_mobile/core/features/profile/data/models/passenger_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/screens/driver_ride_requests_screen.dart';
+import 'package:fellow_traveller_mobile/core/router/role_scope.dart';
 import 'package:fellow_traveller_mobile/core/router/role_shell.dart';
 import 'package:fellow_traveller_mobile/core/screens/main_screen.dart';
 import 'package:fellow_traveller_mobile/core/screens/root_screen.dart';
@@ -24,6 +23,7 @@ GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 GlobalKey<NavigatorState> shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
+  refreshListenable: AppDependencies.instance.userSession,
   redirect: (BuildContext context, GoRouterState state) {
     final path = state.uri.path;
     final session = AppDependencies.instance.userSession;
@@ -69,7 +69,7 @@ final router = GoRouter(
       path: AppRoutesEnum.createProfile.path,
       name: AppRoutesEnum.createProfile.name,
       builder: (BuildContext context, GoRouterState state) {
-        return const CreateProfileScreen();
+        return const RoleScope(child: CreateProfileScreen());
       },
     ),
     GoRoute(
@@ -84,16 +84,16 @@ final router = GoRouter(
       path: '${AppRoutesEnum.userDriverProfile.path}/:profileId',
       name: AppRoutesEnum.userDriverProfile.name,
       builder: (BuildContext context, GoRouterState state) {
-        final profile = state.extra! as DriverProfileModel;
-        return UserDriverProfileScreen(profile: profile);
+        final profileId = int.parse(state.pathParameters['profileId']!);
+        return UserDriverProfileScreen(profileId: profileId);
       },
     ),
     GoRoute(
       path: '${AppRoutesEnum.userPassengerProfile.path}/:profileId',
       name: AppRoutesEnum.userPassengerProfile.name,
       builder: (BuildContext context, GoRouterState state) {
-        final profile = state.extra! as PassengerProfileModel;
-        return UserPassengerProfileScreen(profile: profile);
+        final profileId = int.parse(state.pathParameters['profileId']!);
+        return UserPassengerProfileScreen(profileId: profileId);
       },
     ),
     StatefulShellRoute.indexedStack(
@@ -112,7 +112,7 @@ final router = GoRouter(
               path: AppRoutesEnum.main.path,
               name: AppRoutesEnum.main.name,
               builder: (BuildContext context, GoRouterState state) {
-                return const MainScreen();
+                return const RoleScope(child: MainScreen());
               },
             ),
           ],

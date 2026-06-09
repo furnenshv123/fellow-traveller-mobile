@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/point_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/rides_repository.dart';
+import 'package:fellow_traveller_mobile/core/utils/validators/ride_validators.dart';
 import 'package:meta/meta.dart';
 
 part 'driver_home_event.dart';
@@ -28,22 +30,32 @@ class DriverHomeBloc extends Bloc<DriverHomeEvent, DriverHomeState> {
       return;
     }
 
-    if (event.from == null ||
-        event.to == null ||
-        event.dateIso == null ||
-        event.time == null ||
-        event.time!.isEmpty) {
-      emit(current.copyWith(errorMessage: 'Заполните маршрут, дату и время'));
+    final routeError = RideValidators.routePoints(
+      fromId: event.from?.id,
+      toId: event.to?.id,
+    );
+    if (routeError != null) {
+      emit(current.copyWith(errorMessage: routeError));
       return;
     }
 
-    if (event.from!.id == event.to!.id) {
-      emit(current.copyWith(errorMessage: 'Выберите разные города'));
-      return;
-    }
+    final dateError = RideValidators.dateIso(event.dateIso);
+    final timeError = RideValidators.time(event.time);
+    final seatsError = RideValidators.seats(event.seats.toString());
+    final priceError = RideValidators.price(event.price.toString());
 
-    if (event.seats <= 0 || event.price <= 0) {
-      emit(current.copyWith(errorMessage: 'Укажите количество мест и цену'));
+    if (dateError != null ||
+        timeError != null ||
+        seatsError != null ||
+        priceError != null) {
+      emit(
+        current.copyWith(
+          errorMessage: dateError ??
+              timeError ??
+              seatsError ??
+              priceError,
+        ),
+      );
       return;
     }
 
@@ -67,6 +79,7 @@ class DriverHomeBloc extends Bloc<DriverHomeEvent, DriverHomeState> {
           successMessage: 'Поездка создана',
         ),
       );
+      AppDependencies.instance.ridesTabRefreshNotifier.requestRefresh();
     } catch (_) {
       emit(
         current.copyWith(

@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,10 @@ class _RootScreenState extends State<RootScreen> {
     if (_currentPath != newPath) {
       _currentPath = newPath;
       widget.child.goBranch(index);
+    }
+
+    if (index == 1) {
+      AppDependencies.instance.ridesTabRefreshNotifier.requestRefresh();
     }
   }
 

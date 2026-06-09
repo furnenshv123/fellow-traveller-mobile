@@ -1,8 +1,9 @@
 import 'package:fellow_traveller_mobile/core/data/user_session_storage.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
 import 'package:fellow_traveller_mobile/core/features/auth/data/models/auth_response.dart';
+import 'package:flutter/foundation.dart';
 
-class UserSession {
+class UserSession extends ChangeNotifier {
   UserSession(this._storage);
 
   final UserSessionStorage _storage;
@@ -25,7 +26,10 @@ class UserSession {
     _needsProfileSetup = await _storage.getProfileComplete() != true;
   }
 
-  Future<void> setFromAuth(AuthResponse response, {String? fallbackRole}) async {
+  Future<void> setFromAuth(
+    AuthResponse response, {
+    String? fallbackRole,
+  }) async {
     final roleValue = response.currentRole ?? fallbackRole ?? 'passenger';
     _role = UserRoleExtension.fromApiValue(roleValue);
     _email = response.email;
@@ -35,6 +39,7 @@ class UserSession {
     if (_email != null) {
       await _storage.saveEmail(_email!);
     }
+    notifyListeners();
   }
 
   void setProfileSetupHintFromAuth(AuthResponse response) {
@@ -48,6 +53,7 @@ class UserSession {
   Future<void> setProfileComplete(bool complete) async {
     _needsProfileSetup = !complete;
     await _storage.saveProfileComplete(complete);
+    notifyListeners();
   }
 
   Future<void> clear() async {
@@ -55,5 +61,6 @@ class UserSession {
     _email = null;
     _needsProfileSetup = true;
     await _storage.clear();
+    notifyListeners();
   }
 }

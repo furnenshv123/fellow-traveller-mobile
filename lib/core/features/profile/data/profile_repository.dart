@@ -34,6 +34,69 @@ class ProfileRepository {
 
   Future<PassengerProfileModel?> getPassengerProfile() => _fetchPassengerProfile();
 
+  Future<DriverProfileModel?> getDriverProfileById(int driverProfileId) async {
+    if (_useMock) {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      return DriverProfileModel(
+        id: driverProfileId,
+        userId: driverProfileId,
+        fullName: 'Водитель #$driverProfileId',
+        phone: '+375 29 000 00 00',
+        avgRating: 4.8,
+        carModel: 'Toyota Camry',
+        carColor: 'Белый',
+        carLicense: 'A123BC01',
+      );
+    }
+
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/profile/driver/$driverProfileId',
+      );
+      final data = response.data;
+      if (data == null) {
+        return null;
+      }
+      return DriverProfileModel.fromJson(data);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  Future<PassengerProfileModel?> getPassengerProfileById(
+    int passengerProfileId,
+  ) async {
+    if (_useMock) {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      return PassengerProfileModel(
+        id: passengerProfileId,
+        userId: passengerProfileId,
+        fullName: 'Пассажир #$passengerProfileId',
+        phone: '+375 29 111 11 11',
+        avgRating: 4.7,
+      );
+    }
+
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/passenger/profile/$passengerProfileId',
+      );
+      final data = response.data;
+      if (data == null) {
+        return null;
+      }
+      return PassengerProfileModel.fromJson(data);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
   Future<void> createDriverProfile({
     required String fullName,
     required String phone,

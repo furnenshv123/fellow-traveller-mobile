@@ -1,5 +1,6 @@
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/price_formatter.dart';
 import 'package:flutter/material.dart';
 
 class RideCard extends StatelessWidget {
@@ -68,7 +69,7 @@ class RideCard extends StatelessWidget {
               ),
               trailing ??
                   Text(
-                    '${ride.price.toInt()}',
+                    PriceFormatter.format(ride.price),
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontSize: 15,

@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
 import 'package:fellow_traveller_mobile/core/components/custom_button.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
 import 'package:fellow_traveller_mobile/core/utils/profile_navigation.dart';
@@ -65,7 +66,8 @@ class _AuthScreenState extends State<AuthScreen> {
         final form = state is AuthInitial ? state : const AuthInitial();
 
         return Scaffold(
-          body: DecoratedBox(
+          body: AppScreenBody(
+            child: DecoratedBox(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -256,6 +258,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             ),
+          ),
           ),
         );
       },

@@ -9,9 +9,9 @@ class AuthRepository {
     required ApiClientAuth apiClient,
     required SecureTokenStorage tokenStorage,
     required UserSession userSession,
-  })  : _apiClient = apiClient,
-        _tokenStorage = tokenStorage,
-        _userSession = userSession;
+  }) : _apiClient = apiClient,
+       _tokenStorage = tokenStorage,
+       _userSession = userSession;
 
   final ApiClientAuth _apiClient;
   final SecureTokenStorage _tokenStorage;
@@ -33,6 +33,12 @@ class AuthRepository {
     return response;
   }
 
+  Future<AuthResponse> changeRole({required String role}) async {
+    final response = await _apiClient.changeRole(userRole: {'new_role': role});
+    await _persistSession(response, role: role);
+    return response;
+  }
+
   Future<AuthResponse> register({
     required String email,
     required String password,
@@ -50,11 +56,19 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
+    try {
+      await _apiClient.logout();
+    } catch (_) {
+      // Clear local session even if the token is already invalid.
+    }
     await _tokenStorage.deleteToken();
     await _userSession.clear();
   }
 
-  Future<void> _persistSession(AuthResponse response, {required String role}) async {
+  Future<void> _persistSession(
+    AuthResponse response, {
+    required String role,
+  }) async {
     final token = response.accessToken;
     if (token != null && token.isNotEmpty) {
       await _tokenStorage.saveToken(token);

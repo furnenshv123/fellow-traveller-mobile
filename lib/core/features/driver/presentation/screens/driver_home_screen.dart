@@ -3,7 +3,10 @@ import 'package:fellow_traveller_mobile/core/features/rides/data/models/point_mo
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/point_search_field.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/ride_card.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/formatters/time_formatter.dart';
+import 'package:fellow_traveller_mobile/core/utils/validators/ride_validators.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -14,18 +17,22 @@ class DriverHomeScreen extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
+  final _formKey = GlobalKey<FormState>();
   PointModel? _from;
   PointModel? _to;
   String? _dateIso;
   final _timeController = TextEditingController(text: '09:00');
   final _seatsController = TextEditingController(text: '3');
   final _priceController = TextEditingController(text: '5000');
+  final _dateDisplayController = TextEditingController();
+  String? _routeError;
 
   @override
   void dispose() {
     _timeController.dispose();
     _seatsController.dispose();
     _priceController.dispose();
+    _dateDisplayController.dispose();
     super.dispose();
   }
 
@@ -50,6 +57,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     setState(() {
       _dateIso =
           '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+      _dateDisplayController.text = _formatDisplayDate(_dateIso);
     });
   }
 
@@ -65,17 +73,32 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   void _submit() {
+    setState(() {
+      _routeError = RideValidators.routePoints(
+        fromId: _from?.id,
+        toId: _to?.id,
+      );
+    });
+
+    if (!_formKey.currentState!.validate() || _routeError != null) {
+      return;
+    }
+
     context.read<DriverHomeBloc>().add(
           DriverHomeRideSubmitted(
             from: _from,
             to: _to,
             dateIso: _dateIso,
             time: _timeController.text.trim(),
-            seats: int.tryParse(_seatsController.text.trim()) ?? 0,
-            price: double.tryParse(_priceController.text.trim()) ?? 0,
+            seats: int.parse(_seatsController.text.trim()),
+            price: double.parse(
+              _priceController.text.trim().replaceAll(',', '.'),
+            ),
           ),
         );
   }
+
+  String? _validateDateField(String? _) => RideValidators.dateIso(_dateIso);
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +123,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         builder: (BuildContext context, DriverHomeState state) {
           final ready = state is DriverHomeReady ? state : const DriverHomeReady();
 
-          return ListView(
+          return Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: ListView(
             padding: const EdgeInsets.all(16),
             children: <Widget>[
               Container(
@@ -123,7 +149,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       label: 'Откуда',
                       hint: 'откуда',
                       value: _from,
-                      onChanged: (PointModel? v) => setState(() => _from = v),
+                      onChanged: (PointModel? v) => setState(() {
+                        _from = v;
+                        _routeError = null;
+                      }),
                     ),
                     const SizedBox(height: 12),
                     PointSearchField(
@@ -132,32 +161,48 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       hint: 'куда',
                       value: _to,
                       icon: Icons.flag_outlined,
-                      onChanged: (PointModel? v) => setState(() => _to = v),
+                      onChanged: (PointModel? v) => setState(() {
+                        _to = v;
+                        _routeError = null;
+                      }),
                     ),
+                    if (_routeError != null) ...<Widget>[
+                      const SizedBox(height: 8),
+                      Text(
+                        _routeError!,
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     _labeledField(
                       label: 'Дата',
-                      child: InkWell(
+                      child: TextFormField(
+                        readOnly: true,
                         onTap: _pickDate,
-                        borderRadius: BorderRadius.circular(12),
-                        child: _inputShell(
-                          child: Text(
-                            _formatDisplayDate(_dateIso),
-                            style: const TextStyle(
-                              color: AppColors.textBody,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                        controller: _dateDisplayController,
+                        validator: _validateDateField,
+                        style: const TextStyle(
+                          color: AppColors.textBody,
+                          fontWeight: FontWeight.w600,
                         ),
+                        decoration: _fieldDecoration(hint: 'Выберите дату'),
                       ),
                     ),
                     const SizedBox(height: 12),
                     _labeledField(
                       label: 'Время (ЧЧ:ММ)',
-                      child: TextField(
+                      child: TextFormField(
                         controller: _timeController,
                         style: const TextStyle(color: AppColors.textBody),
-                        decoration: _fieldDecoration(),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          TimeInputFormatter(),
+                        ],
+                        validator: RideValidators.time,
+                        decoration: _fieldDecoration(hint: '09:00'),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -166,9 +211,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         Expanded(
                           child: _labeledField(
                             label: 'Места',
-                            child: TextField(
+                            child: TextFormField(
                               controller: _seatsController,
                               keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              validator: RideValidators.seats,
                               style: const TextStyle(color: AppColors.textBody),
                               decoration: _fieldDecoration(),
                             ),
@@ -177,10 +226,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _labeledField(
-                            label: 'Цена, ',
-                            child: TextField(
+                            label: 'Цена, Br',
+                            child: TextFormField(
                               controller: _priceController,
-                              keyboardType: TextInputType.number,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[\d.,]'),
+                                ),
+                              ],
+                              validator: RideValidators.price,
                               style: const TextStyle(color: AppColors.textBody),
                               decoration: _fieldDecoration(),
                             ),
@@ -227,6 +284,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               ],
             const SizedBox(height: 100),
             ],
+          ),
           );
         },
       ),
@@ -251,21 +309,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 
-  Widget _inputShell({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.inputBorder),
-      ),
-      child: child,
-    );
-  }
-
-  InputDecoration _fieldDecoration() {
+  InputDecoration _fieldDecoration({String? hint}) {
     return InputDecoration(
+      hintText: hint,
       filled: true,
       fillColor: AppColors.inputFill,
       border: OutlineInputBorder(
@@ -275,6 +321,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.inputBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.inputFocused),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.red.shade400),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     );

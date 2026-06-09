@@ -76,11 +76,14 @@ class _ApiClientAuth implements ApiClientAuth {
   }
 
   @override
-  Future<AuthResponse> changeRole({required String userRole}) async {
+  Future<AuthResponse> changeRole({
+    required Map<String, String> userRole,
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = userRole;
+    final _data = <String, dynamic>{};
+    _data.addAll(userRole);
     final _options = _setStreamType<AuthResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -100,6 +103,23 @@ class _ApiClientAuth implements ApiClientAuth {
       rethrow;
     }
     return _value;
+  }
+
+  @override
+  Future<void> logout() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _options = _setStreamType<void>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/auth/logout',
+            queryParameters: queryParameters,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

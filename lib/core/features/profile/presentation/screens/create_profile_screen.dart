@@ -4,7 +4,11 @@ import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
 import 'package:fellow_traveller_mobile/core/errors/api_error_mapper.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/formatters/belarus_license_plate_formatter.dart';
+import 'package:fellow_traveller_mobile/core/utils/formatters/belarus_phone_formatter.dart';
+import 'package:fellow_traveller_mobile/core/utils/validators/profile_validators.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateProfileScreen extends StatefulWidget {
@@ -55,17 +59,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     try {
       if (_isDriver) {
         await repo.createDriverProfile(
-          fullName: _fullNameController.text,
-          phone: _phoneController.text,
-          carModel: _carModelController.text,
-          carLicense: _carLicenseController.text,
+          fullName: _fullNameController.text.trim(),
+          phone: _phoneController.text.trim(),
+          carModel: _carModelController.text.trim(),
+          carLicense: _carLicenseController.text.trim().toUpperCase(),
           photoUrl: _photoUrlController.text,
           carColor: _carColorController.text,
         );
       } else {
         await repo.createPassengerProfile(
-          fullName: _fullNameController.text,
-          phone: _phoneController.text,
+          fullName: _fullNameController.text.trim(),
+          phone: _phoneController.text.trim(),
           photoUrl: _photoUrlController.text,
         );
       }
@@ -108,6 +112,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Container(
                     constraints: const BoxConstraints(maxWidth: 480),
                     decoration: BoxDecoration(
@@ -145,16 +150,20 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         _field(
                           label: 'ФИО *',
                           controller: _fullNameController,
-                          validator: (value) =>
-                              _required(value, 'Укажите ФИО'),
+                          hint: 'Иван Иванов Иванович',
+                          textCapitalization: TextCapitalization.words,
+                          validator: ProfileValidators.fullName,
                         ),
                         const SizedBox(height: 16),
                         _field(
                           label: 'Телефон *',
                           controller: _phoneController,
+                          hint: '+375 (29) 123-45-67',
                           keyboardType: TextInputType.phone,
-                          validator: (value) =>
-                              _required(value, 'Укажите телефон'),
+                          inputFormatters: <TextInputFormatter>[
+                            BelarusPhoneFormatter(),
+                          ],
+                          validator: ProfileValidators.phone,
                         ),
                         const SizedBox(height: 16),
                         _field(
@@ -167,20 +176,30 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           _field(
                             label: 'Модель автомобиля *',
                             controller: _carModelController,
-                            validator: (value) =>
-                                _required(value, 'Укажите модель'),
+                            hint: 'Toyota Camry',
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[A-Za-z0-9\s\-]'),
+                              ),
+                            ],
+                            validator: ProfileValidators.carModel,
                           ),
                           const SizedBox(height: 16),
                           _field(
                             label: 'Цвет автомобиля',
                             controller: _carColorController,
+                            hint: 'Белый',
                           ),
                           const SizedBox(height: 16),
                           _field(
                             label: 'Госномер *',
                             controller: _carLicenseController,
-                            validator: (value) =>
-                                _required(value, 'Укажите госномер'),
+                            hint: '1234 AB-7',
+                            textCapitalization: TextCapitalization.characters,
+                            inputFormatters: <TextInputFormatter>[
+                              BelarusLicensePlateFormatter(),
+                            ],
+                            validator: ProfileValidators.carLicense,
                           ),
                         ],
                         if (_generalError != null) ...<Widget>[
@@ -228,18 +247,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
-  String? _required(String? value, String message) {
-    if (value == null || value.trim().isEmpty) {
-      return message;
-    }
-    return null;
-  }
-
   Widget _field({
     required String label,
     required TextEditingController controller,
     String? hint,
     TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return Column(
@@ -257,6 +271,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          textCapitalization: textCapitalization,
+          inputFormatters: inputFormatters,
           validator: validator,
           enabled: !_isLoading,
           decoration: InputDecoration(
@@ -278,6 +294,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 color: AppColors.inputFocused,
                 width: 2,
               ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.red.shade400),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.red.shade700, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,

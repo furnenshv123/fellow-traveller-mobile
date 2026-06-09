@@ -33,6 +33,26 @@ class RideModel {
 
   String get routeLabel => '${fromPoint.name} → ${toPoint.name}';
 
+  RideModel copyWith({
+    int? pendingRequestsCount,
+  }) {
+    return RideModel(
+      id: id,
+      fromPoint: fromPoint,
+      toPoint: toPoint,
+      date: date,
+      time: time,
+      price: price,
+      availablePlaces: availablePlaces,
+      driverName: driverName,
+      driverRating: driverRating,
+      driverProfileId: driverProfileId,
+      driverPhoto: driverPhoto,
+      distanceKm: distanceKm,
+      pendingRequestsCount: pendingRequestsCount ?? this.pendingRequestsCount,
+    );
+  }
+
   factory RideModel.fromJson(Map<String, dynamic> json) {
     return RideModel(
       id: json['id'] as int,
@@ -51,6 +71,9 @@ class RideModel {
       driverRating: (json['driver_rating'] as num?)?.toDouble(),
       driverPhoto: json['driver_photo'] as String?,
       distanceKm: json['distance_km'] as String?,
+      pendingRequestsCount: json['pending_requests_count'] as int? ??
+          json['pending_request_count'] as int? ??
+          0,
     );
   }
 }

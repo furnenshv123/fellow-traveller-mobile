@@ -65,6 +65,35 @@ class PassengerRideRequestModel {
 
   String get routeLabel => '${fromPoint.name} → ${toPoint.name}';
 
+  PassengerRideRequestModel copyWith({
+    int? driverProfileId,
+    String? driverName,
+    double? driverRating,
+    String? driverPhone,
+    String? driverPhoto,
+    String? driverCarModel,
+    String? driverCarColor,
+  }) {
+    return PassengerRideRequestModel(
+      id: id,
+      rideId: rideId,
+      status: status,
+      seatsRequested: seatsRequested,
+      fromPoint: fromPoint,
+      toPoint: toPoint,
+      date: date,
+      time: time,
+      price: price,
+      driverName: driverName ?? this.driverName,
+      driverRating: driverRating ?? this.driverRating,
+      driverPhone: driverPhone ?? this.driverPhone,
+      driverProfileId: driverProfileId ?? this.driverProfileId,
+      driverPhoto: driverPhoto ?? this.driverPhoto,
+      driverCarModel: driverCarModel ?? this.driverCarModel,
+      driverCarColor: driverCarColor ?? this.driverCarColor,
+    );
+  }
+
   bool get isUpcoming =>
       status == RideRequestStatus.pending || status == RideRequestStatus.accepted;
 

@@ -1,6 +1,10 @@
+import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
+import 'package:fellow_traveller_mobile/core/components/custom_button.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/driver_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/logout_navigation.dart';
+import 'package:fellow_traveller_mobile/core/utils/role_switch_navigation.dart';
 import 'package:flutter/material.dart';
 
 class DriverProfileScreen extends StatefulWidget {
@@ -12,6 +16,7 @@ class DriverProfileScreen extends StatefulWidget {
 
 class _DriverProfileScreenState extends State<DriverProfileScreen> {
   late Future<DriverProfileModel?> _profileFuture;
+  bool _isSwitchingRole = false;
 
   @override
   void initState() {
@@ -20,73 +25,115 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   }
 
   void _load() {
-    _profileFuture = AppDependencies.instance.profileRepository.getDriverProfile();
+    _profileFuture = AppDependencies.instance.profileRepository
+        .getDriverProfile();
+  }
+
+  Future<void> _switchRole() async {
+    if (_isSwitchingRole) {
+      return;
+    }
+
+    setState(() => _isSwitchingRole = true);
+    await RoleSwitchNavigation.switchToOppositeRole(context);
+    if (mounted) {
+      setState(() => _isSwitchingRole = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: FutureBuilder<DriverProfileModel?>(
+      body: AppScreenBody(
+        withBottomNav: true,
+        child: FutureBuilder<DriverProfileModel?>(
         future: _profileFuture,
-        builder: (BuildContext context, AsyncSnapshot<DriverProfileModel?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
+        builder:
+            (
+              BuildContext context,
+              AsyncSnapshot<DriverProfileModel?> snapshot,
+            ) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                );
+              }
 
-          final profile = snapshot.data;
+              final profile = snapshot.data;
 
-          if (profile == null) {
-            return const Center(
-              child: Text(
-                'Профиль не найден',
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              setState(_load);
-              await _profileFuture;
-            },
-            color: AppColors.primary,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: <Widget>[
-                _header(profile),
-                const SizedBox(height: 12),
-                _section(
-                  title: 'Контакты',
-                  rows: <_Row>[
-                    _Row('Телефон', profile.phone ?? '—'),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _section(
-                  title: 'Автомобиль',
-                  rows: <_Row>[
-                    _Row('Модель', profile.carModel ?? '—'),
-                    _Row('Цвет', profile.carColor ?? '—'),
-                    _Row('Госномер', profile.carLicense ?? '—'),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                FilledButton.tonal(
-                  onPressed: () {},
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.surfaceMuted,
-                    foregroundColor: Colors.red.shade700,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+              if (profile == null) {
+                return const Center(
+                  child: Text(
+                    'Профиль не найден',
+                    style: TextStyle(color: AppColors.textSecondary),
                   ),
-                  child: const Text('Выйти'),
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  setState(_load);
+                  await _profileFuture;
+                },
+                color: AppColors.primary,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: <Widget>[
+                    _header(profile),
+                    const SizedBox(height: 12),
+                    _section(
+                      title: 'Контакты',
+                      rows: <_Row>[_Row('Телефон', profile.phone ?? '—')],
+                    ),
+                    const SizedBox(height: 12),
+                    _section(
+                      title: 'Автомобиль',
+                      rows: <_Row>[
+                        _Row('Модель', profile.carModel ?? '—'),
+                        _Row('Цвет', profile.carColor ?? '—'),
+                        _Row('Госномер', profile.carLicense ?? '—'),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    CustomButton(
+                      text: AppDependencies.instance.userSession.isDriver
+                          ? 'Стать попутчиком'
+                          : 'Стать водителем',
+                      onPressed: _isSwitchingRole ? () {} : _switchRole,
+                      backgroundColor: _isSwitchingRole
+                          ? AppColors.inputBorder
+                          : AppColors.primary,
+                    ),
+                    if (_isSwitchingRole) ...<Widget>[
+                      const SizedBox(height: 12),
+                      const Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    FilledButton.tonal(
+                      onPressed: () => LogoutNavigation.confirmAndLogout(context),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.surfaceMuted,
+                        foregroundColor: Colors.red.shade700,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text('Выйти'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+      ),
       ),
     );
   }
@@ -104,8 +151,9 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
           CircleAvatar(
             radius: 48,
             backgroundColor: AppColors.primaryLight,
-            backgroundImage:
-                profile.photoUrl != null ? NetworkImage(profile.photoUrl!) : null,
+            backgroundImage: profile.photoUrl != null
+                ? NetworkImage(profile.photoUrl!)
+                : null,
             child: profile.photoUrl == null
                 ? Text(
                     (profile.fullName ?? 'В')[0],
@@ -130,7 +178,11 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Icon(Icons.star_rounded, size: 18, color: AppColors.accentAmber),
+              const Icon(
+                Icons.star_rounded,
+                size: 18,
+                color: AppColors.accentAmber,
+              ),
               const SizedBox(width: 6),
               Text(
                 profile.avgRating.toStringAsFixed(1),
@@ -173,7 +225,10 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(row.label, style: const TextStyle(color: AppColors.textMuted)),
+                  Text(
+                    row.label,
+                    style: const TextStyle(color: AppColors.textMuted),
+                  ),
                   Text(
                     row.value,
                     style: const TextStyle(

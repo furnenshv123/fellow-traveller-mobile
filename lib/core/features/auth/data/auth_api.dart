@@ -14,5 +14,9 @@ abstract class ApiClientAuth {
   @POST('/auth/register')
   Future<AuthResponse> register({@Body() required AuthModel registerRequest});
   @POST('/auth/change-role')
-  Future<AuthResponse> changeRole({@Body() required String userRole});
+  Future<AuthResponse> changeRole({
+    @Body() required Map<String, String> userRole,
+  });
+  @POST('/auth/logout')
+  Future<void> logout();
 }

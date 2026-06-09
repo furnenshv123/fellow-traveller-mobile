@@ -1,11 +1,14 @@
+import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
+import 'package:fellow_traveller_mobile/core/data/rides_tab_refresh_notifier.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
-import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
-import 'package:fellow_traveller_mobile/core/features/ratings/presentation/widgets/driver_rating_dialog.dart';
+import 'package:fellow_traveller_mobile/core/features/ratings/presentation/rating_submission.dart';
+import 'package:fellow_traveller_mobile/core/features/ratings/presentation/widgets/pending_rating_banner.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_request_model.dart';
+import 'package:fellow_traveller_mobile/core/utils/app_bottom_sheet.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
-import 'package:fellow_traveller_mobile/core/utils/profile_ui_mapper.dart';
+import 'package:fellow_traveller_mobile/core/utils/price_formatter.dart';
+import 'package:fellow_traveller_mobile/core/utils/user_profile_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class PassengerMyRidesScreen extends StatefulWidget {
   const PassengerMyRidesScreen({super.key});
@@ -16,17 +19,50 @@ class PassengerMyRidesScreen extends StatefulWidget {
 
 class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
   late Future<List<PassengerRideRequestModel>> _requestsFuture;
-  final Set<int> _ratedDriverIds = <int>{};
+  late final RidesTabRefreshNotifier _ridesRefresh;
+  int _requestsLoadId = 0;
+  Set<int> _ratedDriverIds = <int>{};
+  int? _cancellingId;
 
   @override
   void initState() {
     super.initState();
+    _ridesRefresh = AppDependencies.instance.ridesTabRefreshNotifier;
+    _ridesRefresh.addListener(_onRidesRefreshRequested);
     _load();
+    _loadRatedDrivers();
+  }
+
+  @override
+  void dispose() {
+    _ridesRefresh.removeListener(_onRidesRefreshRequested);
+    super.dispose();
+  }
+
+  void _onRidesRefreshRequested() {
+    if (!mounted) {
+      return;
+    }
+    _refresh();
   }
 
   void _load() {
+    _requestsLoadId++;
     _requestsFuture =
         AppDependencies.instance.ridesRepository.getMyPassengerRequests();
+  }
+
+  Future<void> _refresh() async {
+    setState(_load);
+    await _requestsFuture;
+    await _loadRatedDrivers();
+  }
+
+  Future<void> _loadRatedDrivers() async {
+    final ids = await loadRatedDriverIds();
+    if (mounted) {
+      setState(() => _ratedDriverIds = ids);
+    }
   }
 
   String _formatDisplayDate(String iso) {
@@ -37,40 +73,89 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
     return '${parts[2]}.${parts[1]}.${parts[0]}';
   }
 
-  void _openDriverProfile(PassengerRideRequestModel request) {
-    final profileId = request.driverProfileId;
-    if (profileId == null) {
+  Future<void> _openDriverProfile(PassengerRideRequestModel request) async {
+    final profileId = await AppDependencies.instance.ridesRepository
+        .resolveDriverProfileId(request);
+    if (!mounted || profileId == null) {
       return;
     }
-    context.push(
-      AppRoutesEnum.userDriverProfile.pathWithProfileId(profileId),
-      extra: ProfileUiMapper.fromPassengerRequest(request),
-    );
+    UserProfileNavigation.openDriverProfile(context, profileId: profileId);
   }
 
   Future<void> _openRating(PassengerRideRequestModel request) async {
-    final driverId = request.driverProfileId;
+    final driverId = await AppDependencies.instance.ridesRepository
+        .resolveDriverProfileId(request);
     final driverName = request.driverName;
     if (driverId == null || driverName == null) {
       return;
     }
 
-    final result = await showDriverRatingDialog(
+    final rated = await RatingSubmission.rateDriver(
       context: context,
       driverProfileId: driverId,
       driverName: driverName,
     );
 
-    if (result != null && mounted) {
+    if (rated && mounted) {
       setState(() => _ratedDriverIds.add(driverId));
     }
+  }
+
+  Future<void> _cancelRequest(PassengerRideRequestModel request) async {
+    if (_cancellingId != null) {
+      return;
+    }
+
+    setState(() => _cancellingId = request.id);
+
+    try {
+      await AppDependencies.instance.ridesRepository.cancelRideRequest(
+        request.id,
+      );
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Заявка отменена')));
+      await _refresh();
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Не удалось отменить заявку')));
+    } finally {
+      if (mounted) {
+        setState(() => _cancellingId = null);
+      }
+    }
+  }
+
+  PassengerRideRequestModel? _firstPendingRating(
+    List<PassengerRideRequestModel> requests,
+  ) {
+    for (final request in requests) {
+      final driverId = request.driverProfileId;
+      if (driverId == null || request.driverName == null) {
+        continue;
+      }
+      if (request.canRateDriver && !_ratedDriverIds.contains(driverId)) {
+        return request;
+      }
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: FutureBuilder<List<PassengerRideRequestModel>>(
+      body: AppScreenBody(
+        withBottomNav: true,
+        child: FutureBuilder<List<PassengerRideRequestModel>>(
+        key: ValueKey<int>(_requestsLoadId),
         future: _requestsFuture,
         builder: (
           BuildContext context,
@@ -93,6 +178,7 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
 
           final requests =
               snapshot.data ?? <PassengerRideRequestModel>[];
+          final pendingRating = _firstPendingRating(requests);
 
           if (requests.isEmpty) {
             return Center(
@@ -104,26 +190,37 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () async {
-              setState(_load);
-              await _requestsFuture;
-            },
+            onRefresh: _refresh,
             color: AppColors.primary,
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: requests.length,
+              itemCount: requests.length + (pendingRating != null ? 1 : 0),
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (BuildContext context, int index) {
-                final request = requests[index];
+                if (pendingRating != null && index == 0) {
+                  return PendingRatingBanner(
+                    title: 'Поездка завершена',
+                    subtitle: 'Оцените водителя ${pendingRating.driverName}',
+                    onRate: () => _openRating(pendingRating),
+                  );
+                }
+
+                final requestIndex = pendingRating != null ? index - 1 : index;
+                final request = requests[requestIndex];
+                final driverId = request.driverProfileId;
                 final canRate = request.canRateDriver &&
-                    request.driverProfileId != null &&
-                    !_ratedDriverIds.contains(request.driverProfileId);
+                    driverId != null &&
+                    !_ratedDriverIds.contains(driverId);
                 return _RequestCard(
                   request: request,
                   formatDate: _formatDisplayDate,
                   canRate: canRate,
+                  isCancelling: _cancellingId == request.id,
                   onRate: canRate ? () => _openRating(request) : null,
-                  onDriverTap: request.driverProfileId != null
+                  onCancel: request.status == RideRequestStatus.pending
+                      ? () => _cancelRequest(request)
+                      : null,
+                  onDriverTap: driverId != null
                       ? () => _openDriverProfile(request)
                       : null,
                   onTap: () => _showDetails(context, request, canRate: canRate),
@@ -133,6 +230,7 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
           );
         },
       ),
+      ),
     );
   }
 
@@ -141,7 +239,7 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
     PassengerRideRequestModel request, {
     required bool canRate,
   }) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
@@ -181,7 +279,7 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
                 _detailRow('Телефон', request.driverPhone!),
               if (request.driverCarModel != null)
                 _detailRow('Авто', request.driverCarModel!),
-              _detailRow('Цена', '${request.price.toInt()} ₸'),
+              _detailRow('Цена', PriceFormatter.format(request.price)),
               if (canRate) ...<Widget>[
                 const SizedBox(height: 16),
                 FilledButton.icon(
@@ -198,11 +296,7 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
                 ),
               ],
               const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => Navigator.pop(context),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-                child: const Text('Закрыть'),
-              ),
+              
             ],
           ),
         );
@@ -237,7 +331,9 @@ class _RequestCard extends StatelessWidget {
     required this.onTap,
     this.canRate = false,
     this.onRate,
+    this.onCancel,
     this.onDriverTap,
+    this.isCancelling = false,
   });
 
   final PassengerRideRequestModel request;
@@ -245,7 +341,9 @@ class _RequestCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool canRate;
   final VoidCallback? onRate;
+  final VoidCallback? onCancel;
   final VoidCallback? onDriverTap;
+  final bool isCancelling;
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +377,7 @@ class _RequestCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${request.price.toInt()} ₸',
+                    PriceFormatter.format(request.price),
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w700,
@@ -339,6 +437,22 @@ class _RequestCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (onCancel != null) ...<Widget>[
+                    const Spacer(),
+                    TextButton(
+                      onPressed: isCancelling ? null : onCancel,
+                      child: isCancelling
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(
+                              'Отменить',
+                              style: TextStyle(color: Colors.red.shade700),
+                            ),
+                    ),
+                  ],
                   if (canRate) ...<Widget>[
                     const Spacer(),
                     TextButton.icon(

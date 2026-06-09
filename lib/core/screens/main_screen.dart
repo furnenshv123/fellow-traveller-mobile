@@ -1,3 +1,4 @@
+import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
 import 'package:fellow_traveller_mobile/core/components/main_screen_background.dart';
 import 'package:fellow_traveller_mobile/core/data/user_session.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
@@ -35,7 +36,7 @@ class MainScreen extends StatelessWidget {
       fit: StackFit.expand,
       children: <Widget>[
         const MainScreenBackground(),
-        home,
+        AppScreenBody(withBottomNav: true, child: home),
       ],
     );
   }

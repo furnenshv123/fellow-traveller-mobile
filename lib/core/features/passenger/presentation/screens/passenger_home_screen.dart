@@ -1,14 +1,16 @@
-import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
+import 'package:fellow_traveller_mobile/core/components/shell_insets.dart';
+import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/passenger/presentation/bloc/passenger_home_bloc.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/point_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/point_search_field.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/ride_card.dart';
+import 'package:fellow_traveller_mobile/core/utils/app_bottom_sheet.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
-import 'package:fellow_traveller_mobile/core/utils/profile_ui_mapper.dart';
+import 'package:fellow_traveller_mobile/core/utils/price_formatter.dart';
+import 'package:fellow_traveller_mobile/core/utils/user_profile_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class PassengerHomeScreen extends StatefulWidget {
   const PassengerHomeScreen({super.key});
@@ -21,6 +23,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   PointModel? _from;
   PointModel? _to;
   String? _dateIso;
+  bool _isBooking = false;
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -59,12 +62,8 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
 
   void _submitSearch() {
     context.read<PassengerHomeBloc>().add(
-          PassengerHomeSearchSubmitted(
-            from: _from,
-            to: _to,
-            dateIso: _dateIso,
-          ),
-        );
+      PassengerHomeSearchSubmitted(from: _from, to: _to, dateIso: _dateIso),
+    );
   }
 
   @override
@@ -83,11 +82,16 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
         builder: (BuildContext context, PassengerHomeState state) {
           final ready = state is PassengerHomeReady
               ? state
-              : const PassengerHomeReady(results: <RideModel>[], hasSearched: false);
+              : const PassengerHomeReady(
+                  results: <RideModel>[],
+                  hasSearched: false,
+                );
 
           return RefreshIndicator(
             onRefresh: () async {
-              context.read<PassengerHomeBloc>().add(const PassengerHomeStarted());
+              context.read<PassengerHomeBloc>().add(
+                const PassengerHomeStarted(),
+              );
             },
             color: AppColors.primary,
             child: ListView(
@@ -108,7 +112,9 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
                     child: Center(
-                      child: CircularProgressIndicator(color: AppColors.primary),
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
                     ),
                   )
                 else if (ready.hasSearched && ready.results.isEmpty)
@@ -158,7 +164,10 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                 _from = _to;
                 _to = temp;
               }),
-              icon: const Icon(Icons.swap_vert_rounded, color: AppColors.primary),
+              icon: const Icon(
+                Icons.swap_vert_rounded,
+                color: AppColors.primary,
+              ),
             ),
           ),
           PointSearchField(
@@ -191,7 +200,10 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
               ),
               child: Row(
                 children: <Widget>[
-                  const Icon(Icons.calendar_month_outlined, color: AppColors.primary),
+                  const Icon(
+                    Icons.calendar_month_outlined,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     _formatDisplayDate(_dateIso),
@@ -211,7 +223,9 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text(
               'Найти поездки',
@@ -244,88 +258,189 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     if (profileId == null) {
       return;
     }
-    context.push(
-      AppRoutesEnum.userDriverProfile.pathWithProfileId(profileId),
-      extra: ProfileUiMapper.fromRide(ride),
-    );
+    UserProfileNavigation.openDriverProfile(context, profileId: profileId);
   }
 
   void _showRideDetails(BuildContext context, RideModel ride) {
-    showModalBottomSheet<void>(
+    var seats = 1;
+
+    showAppBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.surface,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Text(
-                ride.routeLabel,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textBody,
-                ),
+      builder: (BuildContext sheetContext) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: 24 + MediaQuery.paddingOf(context).bottom,
               ),
-              const SizedBox(height: 12),
-              if (ride.driverName != null)
-                InkWell(
-                  onTap: ride.driverProfileId != null
-                      ? () {
-                          Navigator.pop(context);
-                          _openDriverProfile(ride);
-                        }
-                      : null,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          'Водитель: ${ride.driverName}',
-                          style: TextStyle(
-                            color: ride.driverProfileId != null
-                                ? AppColors.primary
-                                : AppColors.textMuted,
-                            fontWeight: ride.driverProfileId != null
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                          ),
-                        ),
-                        if (ride.driverProfileId != null)
-                          const Icon(
-                            Icons.chevron_right,
-                            size: 18,
-                            color: AppColors.primary,
-                          ),
-                      ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Text(
+                    ride.routeLabel,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textBody,
                     ),
                   ),
-                ),
-              if (ride.driverRating != null) ...<Widget>[
-                const SizedBox(height: 4),
-                Text(
-                  'Рейтинг: ${ride.driverRating}',
-                  style: const TextStyle(color: AppColors.textMuted),
-                ),
-              ],
-              const SizedBox(height: 8),
-              Text(
-                '${ride.date} · ${ride.time} · ${ride.availablePlaces} мест · ${ride.price.toInt()}',
-                style: const TextStyle(color: AppColors.textSecondary),
+                  const SizedBox(height: 12),
+                  if (ride.driverName != null)
+                    InkWell(
+                      onTap: ride.driverProfileId != null
+                          ? () {
+                              Navigator.pop(context);
+                              _openDriverProfile(ride);
+                            }
+                          : null,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              'Водитель: ${ride.driverName}',
+                              style: TextStyle(
+                                color: ride.driverProfileId != null
+                                    ? AppColors.primary
+                                    : AppColors.textMuted,
+                                fontWeight: ride.driverProfileId != null
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
+                            ),
+                            if (ride.driverProfileId != null)
+                              const Icon(
+                                Icons.chevron_right,
+                                size: 18,
+                                color: AppColors.primary,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (ride.driverRating != null) ...<Widget>[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Рейтинг: ${ride.driverRating}',
+                      style: const TextStyle(color: AppColors.textMuted),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  Text(
+                    '${ride.date} · ${ride.time} · ${ride.availablePlaces} мест · ${PriceFormatter.format(ride.price)}',
+                    style: const TextStyle(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: <Widget>[
+                      const Text(
+                        'Мест',
+                        style: TextStyle(
+                          color: AppColors.textBody,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: seats > 1
+                            ? () => setSheetState(() => seats--)
+                            : null,
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                      Text(
+                        '$seats',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: seats < ride.availablePlaces
+                            ? () => setSheetState(() => seats++)
+                            : null,
+                        icon: const Icon(Icons.add_circle_outline),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: _isBooking
+                        ? null
+                        : () async {
+                            setState(() => _isBooking = true);
+                            try {
+                              await AppDependencies.instance.ridesRepository
+                                  .createRideRequest(
+                                    rideId: ride.id,
+                                    seatsRequested: seats,
+                                  );
+                              AppDependencies.instance.ridesTabRefreshNotifier
+                                  .requestRefresh();
+                              if (!mounted) {
+                                return;
+                              }
+                              Navigator.pop(sheetContext);
+                              ScaffoldMessenger.of(this.context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Заявка отправлена. Смотрите статус в «Мои поездки».',
+                                    ),
+                                  ),
+                                );
+                            } catch (_) {
+                              if (!mounted) {
+                                return;
+                              }
+                              ScaffoldMessenger.of(this.context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Не удалось отправить заявку',
+                                    ),
+                                  ),
+                                );
+                            } finally {
+                              if (mounted) {
+                                setState(() => _isBooking = false);
+                              }
+                            }
+                          },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: _isBooking
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text('Отправить заявку'),
+                  ),
+                  const SizedBox(height: 60),
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Закрыть'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: () => Navigator.pop(context),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-                child: const Text('Закрыть'),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

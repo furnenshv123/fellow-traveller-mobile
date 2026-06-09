@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fellow_traveller_mobile/core/data/rides_tab_refresh_notifier.dart';
 import 'package:fellow_traveller_mobile/core/data/secure_storage.dart';
 import 'package:fellow_traveller_mobile/core/data/user_session.dart';
 import 'package:fellow_traveller_mobile/core/data/user_session_storage.dart';
@@ -20,6 +21,7 @@ class AppDependencies {
   late final SecureTokenStorage secureTokenStorage;
   late final UserSessionStorage userSessionStorage;
   late final UserSession userSession;
+  late final RidesTabRefreshNotifier ridesTabRefreshNotifier;
   late final Dio dio;
   late final ApiClientAuth authApi;
   late final AuthRepository authRepository;
@@ -31,6 +33,7 @@ class AppDependencies {
     secureTokenStorage = SecureTokenStorage();
     userSessionStorage = UserSessionStorage();
     userSession = UserSession(userSessionStorage);
+    ridesTabRefreshNotifier = RidesTabRefreshNotifier();
     await userSession.load();
 
     dio = DioFactory.createDio(secureTokenStorage);

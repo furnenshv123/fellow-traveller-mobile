@@ -1,6 +1,5 @@
-import 'package:fellow_traveller_mobile/core/data/user_session.dart';
-import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
+import 'package:fellow_traveller_mobile/core/router/role_scope.dart';
 import 'package:flutter/material.dart';
 
 class RoleShell extends StatelessWidget {
@@ -13,13 +12,11 @@ class RoleShell extends StatelessWidget {
   final Widget passenger;
   final Widget driver;
 
-  UserSession get _session => AppDependencies.instance.userSession;
-
   @override
   Widget build(BuildContext context) {
-    if (_session.role == UserRole.driver) {
-      return driver;
-    }
-    return passenger;
+    return RoleScope.builder(
+      builder: (UserRole role) =>
+          role == UserRole.driver ? driver : passenger,
+    );
   }
 }
