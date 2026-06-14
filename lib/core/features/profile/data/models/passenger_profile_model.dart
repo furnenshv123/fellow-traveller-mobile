@@ -28,6 +28,17 @@ class PassengerProfileModel {
     );
   }
 
+  PassengerProfileModel copyWithPhoto(String? photoUrl) {
+    return PassengerProfileModel(
+      id: id,
+      userId: userId,
+      fullName: fullName,
+      phone: phone,
+      avgRating: avgRating,
+      photoUrl: photoUrl,
+    );
+  }
+
   Map<String, dynamic> toCreateJson({
     required String fullName,
     required String phone,

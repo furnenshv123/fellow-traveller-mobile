@@ -1,4 +1,5 @@
 import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
+import 'package:fellow_traveller_mobile/core/components/editable_profile_avatar.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/passenger_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
@@ -17,6 +18,7 @@ class PassengerProfileScreen extends StatefulWidget {
 class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
   late Future<PassengerProfileModel?> _profileFuture;
   bool _isSwitchingRole = false;
+  String? _photoUrlOverride;
 
   @override
   void initState() {
@@ -25,6 +27,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
   }
 
   void _load() {
+    _photoUrlOverride = null;
     _profileFuture = AppDependencies.instance.profileRepository
         .getPassengerProfile();
   }
@@ -89,26 +92,16 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen> {
                       ),
                       child: Column(
                         children: <Widget>[
-                          CircleAvatar(
-                            radius: 48,
-                            backgroundColor: AppColors.primaryLight,
-                            backgroundImage: profile.photoUrl != null
-                                ? NetworkImage(profile.photoUrl!)
-                                : null,
-                            child: profile.photoUrl == null
-                                ? Text(
-                                    (profile.fullName ?? 'П')[0],
-                                    style: const TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.primary,
-                                    ),
-                                  )
-                                : null,
+                          EditableProfileAvatar(
+                            photoUrl: _photoUrlOverride ?? profile.photoUrl,
+                            fallbackLetter: (profile.fullName ?? 'П')[0],
+                            onPhotoChanged: (String? photoUrl) {
+                              setState(() => _photoUrlOverride = photoUrl);
+                            },
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            profile.fullName ?? 'Пассажир',
+                            profile.fullName ?? 'Попутчик',
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,

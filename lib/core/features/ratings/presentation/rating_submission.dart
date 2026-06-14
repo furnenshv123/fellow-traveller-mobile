@@ -81,7 +81,7 @@ class RatingSubmission {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         const SnackBar(
-          content: Text('Спасибо за оценку пассажира!'),
+          content: Text('Спасибо за оценку попутчика!'),
           backgroundColor: AppColors.textPrimary,
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fellow_traveller_mobile/core/components/custom_button.dart';
+import 'package:fellow_traveller_mobile/core/components/editable_profile_avatar.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/enums/app_routes.dart';
 import 'package:fellow_traveller_mobile/core/errors/api_error_mapper.dart';
@@ -22,7 +23,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _photoUrlController = TextEditingController();
+  String? _localPhotoPath;
   final _carModelController = TextEditingController();
   final _carColorController = TextEditingController();
   final _carLicenseController = TextEditingController();
@@ -36,7 +37,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   void dispose() {
     _fullNameController.dispose();
     _phoneController.dispose();
-    _photoUrlController.dispose();
     _carModelController.dispose();
     _carColorController.dispose();
     _carLicenseController.dispose();
@@ -63,15 +63,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           phone: _phoneController.text.trim(),
           carModel: _carModelController.text.trim(),
           carLicense: _carLicenseController.text.trim().toUpperCase(),
-          photoUrl: _photoUrlController.text,
           carColor: _carColorController.text,
         );
       } else {
         await repo.createPassengerProfile(
           fullName: _fullNameController.text.trim(),
           phone: _phoneController.text.trim(),
-          photoUrl: _photoUrlController.text,
         );
+      }
+
+      if (_localPhotoPath != null) {
+        await repo.uploadProfilePhoto(_localPhotoPath!);
       }
 
       await session.setProfileComplete(true);
@@ -128,7 +130,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         Text(
                           _isDriver
                               ? 'Профиль водителя'
-                              : 'Профиль пассажира',
+                              : 'Профиль попутчика',
                           style: const TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 28,
@@ -166,10 +168,25 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           validator: ProfileValidators.phone,
                         ),
                         const SizedBox(height: 16),
-                        _field(
-                          label: 'Фото (URL)',
-                          controller: _photoUrlController,
-                          hint: 'https://...',
+                        const Text(
+                          'Фото профиля',
+                          style: TextStyle(
+                            color: AppColors.textBody,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Center(
+                          child: LocalProfilePhotoPicker(
+                            localImagePath: _localPhotoPath,
+                            fallbackLetter: _fullNameController.text.isNotEmpty
+                                ? _fullNameController.text.trim()[0]
+                                : '?',
+                            onLocalImageSelected: (String? path) {
+                              setState(() => _localPhotoPath = path);
+                            },
+                          ),
                         ),
                         if (_isDriver) ...<Widget>[
                           const SizedBox(height: 16),

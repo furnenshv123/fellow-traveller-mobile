@@ -158,7 +158,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(
                           children: <Widget>[
                             _RoleOption(
-                              label: 'Пассажир',
+                              label: 'Попутчик',
                               isSelected:
                                   form.selectedRole == UserRole.passenger,
                               onTap: form.isLoading

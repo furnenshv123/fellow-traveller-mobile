@@ -41,6 +41,20 @@ class DriverProfileModel {
     );
   }
 
+  DriverProfileModel copyWithPhoto(String? photoUrl) {
+    return DriverProfileModel(
+      id: id,
+      userId: userId,
+      fullName: fullName,
+      phone: phone,
+      avgRating: avgRating,
+      photoUrl: photoUrl,
+      carModel: carModel,
+      carColor: carColor,
+      carLicense: carLicense,
+    );
+  }
+
   Map<String, dynamic> toCreateJson({
     required String fullName,
     required String phone,

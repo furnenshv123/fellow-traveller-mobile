@@ -68,7 +68,7 @@ class _PassengerRatingDialogState extends State<_PassengerRatingDialog> {
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppColors.radiusLg)),
       title: const Text(
-        'Оценить пассажира',
+        'Оценить попутчика',
         style: TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,

@@ -380,7 +380,7 @@ class _DriverRideRequestsScreenState extends State<DriverRideRequestsScreen> {
                         return PendingRatingBanner(
                           title: 'Поездка завершена',
                           subtitle:
-                              'Оцените пассажира ${pendingRating.passengerName}',
+                              'Оцените попутчика ${pendingRating.passengerName}',
                           onRate: () => _openPassengerRating(pendingRating),
                         );
                       }
@@ -597,8 +597,8 @@ class _PassengerRequestCard extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: onRateTap,
                 icon: const Icon(Icons.star_outline_rounded, size: 18),
-                label: const Text('Оценить пассажира'),
-              ),
+                label: const Text('Оценить попутчика'),
+              ),  
             ),
           ],
         ],

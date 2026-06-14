@@ -2,6 +2,8 @@ import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/passenger_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/phone_launcher.dart';
+import 'package:fellow_traveller_mobile/core/utils/photo_url_resolver.dart';
 import 'package:flutter/material.dart';
 
 class UserPassengerProfileScreen extends StatefulWidget {
@@ -31,12 +33,23 @@ class _UserPassengerProfileScreenState extends State<UserPassengerProfileScreen>
         .getPassengerProfileById(widget.profileId);
   }
 
+  Future<void> _callPhone(BuildContext context, String phone) async {
+    final launched = await PhoneLauncher.call(phone);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось открыть приложение для звонка'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Профиль пассажира'),
+        title: const Text('Профиль попутчика'),
       ),
       body: AppScreenBody(
         includeTopInset: false,
@@ -99,8 +112,11 @@ class _UserPassengerProfileScreenState extends State<UserPassengerProfileScreen>
                     CircleAvatar(
                       radius: 48,
                       backgroundColor: AppColors.primaryLight,
-                      backgroundImage: profile.photoUrl != null
-                          ? NetworkImage(profile.photoUrl!)
+                      backgroundImage: PhotoUrlResolver.resolve(profile.photoUrl) !=
+                              null
+                          ? NetworkImage(
+                              PhotoUrlResolver.resolve(profile.photoUrl)!,
+                            )
                           : null,
                       child: profile.photoUrl == null
                           ? Text(
@@ -115,7 +131,7 @@ class _UserPassengerProfileScreenState extends State<UserPassengerProfileScreen>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      profile.fullName ?? 'Пассажир',
+                      profile.fullName ?? 'Попутчик',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -159,6 +175,15 @@ class _UserPassengerProfileScreenState extends State<UserPassengerProfileScreen>
                         ),
                       ],
                     ),
+                    if (profile.phone != null &&
+                        profile.phone!.trim().isNotEmpty) ...<Widget>[
+                      const SizedBox(height: 20),
+                      FilledButton.icon(
+                        onPressed: () => _callPhone(context, profile.phone!),
+                        icon: const Icon(Icons.phone_rounded),
+                        label: const Text('Связаться с попутчиком'),
+                      ),
+                    ],
                   ],
                 ),
               ),

@@ -140,7 +140,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     const Text(
-                      'Укажите маршрут и параметры поездки. Пассажиры найдут вас по дате и направлению.',
+                      'Укажите маршрут и параметры поездки. Попутчики найдут вас по дате и направлению.',
                       style: TextStyle(color: AppColors.textSecondary, height: 1.4),
                     ),
                     const SizedBox(height: 16),

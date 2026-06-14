@@ -441,7 +441,7 @@ class RidesRepository {
       passengerProfileId: map['passenger_profile_id'] as int? ?? 0,
       status: RideRequestStatusX.fromApi(map['status'] as String?),
       seatsRequested: map['seats_requested'] as int? ?? 1,
-      passengerName: map['passenger_name'] as String? ?? 'Пассажир',
+      passengerName: map['passenger_name'] as String? ?? 'Попутчик',
       passengerRating: (map['passenger_rating'] as num?)?.toDouble(),
       passengerPhone: map['passenger_phone'] as String?,
       passengerPhoto: map['passenger_photo'] as String?,

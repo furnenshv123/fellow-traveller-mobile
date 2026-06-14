@@ -4,6 +4,7 @@ import 'package:fellow_traveller_mobile/core/data/user_session.dart';
 import 'package:fellow_traveller_mobile/core/enums/user_role.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/driver_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/passenger_profile_model.dart';
+import 'package:fellow_traveller_mobile/core/features/profile/data/models/photo_upload_response.dart';
 
 class ProfileRepository {
   ProfileRepository({
@@ -74,7 +75,7 @@ class ProfileRepository {
       return PassengerProfileModel(
         id: passengerProfileId,
         userId: passengerProfileId,
-        fullName: 'Пассажир #$passengerProfileId',
+        fullName: 'Попутчик #$passengerProfileId',
         phone: '+375 29 111 11 11',
         avgRating: 4.7,
       );
@@ -137,6 +138,68 @@ class ProfileRepository {
       data: body,
     );
     _mockDriverProfile = DriverProfileModel.fromJson(response.data!);
+  }
+
+  Future<String> uploadProfilePhoto(String filePath) async {
+    if (_useMock) {
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+      const mockUrl = 'https://picsum.photos/seed/profile/200';
+      if (_userSession.isDriver) {
+        _mockDriverProfile = _mockDriverProfile?.copyWithPhoto(mockUrl) ??
+            DriverProfileModel(
+              id: 1,
+              userId: 1,
+              fullName: 'Водитель',
+              phone: '+375 29 000 00 00',
+              photoUrl: mockUrl,
+            );
+      } else {
+        _mockPassengerProfile =
+            _mockPassengerProfile?.copyWithPhoto(mockUrl) ??
+                PassengerProfileModel(
+                  id: 1,
+                  userId: 1,
+                  fullName: 'Попутчик',
+                  phone: '+375 29 000 00 00',
+                  photoUrl: mockUrl,
+                );
+      }
+      return mockUrl;
+    }
+
+    final formData = FormData.fromMap(<String, dynamic>{
+      'photo': await MultipartFile.fromFile(filePath),
+    });
+
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/profile/photo',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+
+    final data = response.data;
+    if (data == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        message: 'Empty photo upload response',
+      );
+    }
+
+    return PhotoUploadResponse.fromJson(data).photoUrl;
+  }
+
+  Future<void> deleteProfilePhoto() async {
+    if (_useMock) {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (_userSession.isDriver) {
+        _mockDriverProfile = _mockDriverProfile?.copyWithPhoto(null);
+      } else {
+        _mockPassengerProfile = _mockPassengerProfile?.copyWithPhoto(null);
+      }
+      return;
+    }
+
+    await _dio.delete<void>('/profile/photo');
   }
 
   Future<void> createPassengerProfile({

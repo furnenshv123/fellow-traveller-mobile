@@ -2,6 +2,8 @@ import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/driver_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/phone_launcher.dart';
+import 'package:fellow_traveller_mobile/core/utils/photo_url_resolver.dart';
 import 'package:flutter/material.dart';
 
 class UserDriverProfileScreen extends StatefulWidget {
@@ -29,6 +31,17 @@ class _UserDriverProfileScreenState extends State<UserDriverProfileScreen> {
   void _load() {
     _profileFuture = AppDependencies.instance.profileRepository
         .getDriverProfileById(widget.profileId);
+  }
+
+  Future<void> _callPhone(BuildContext context, String phone) async {
+    final launched = await PhoneLauncher.call(phone);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось открыть приложение для звонка'),
+        ),
+      );
+    }
   }
 
   @override
@@ -79,6 +92,15 @@ class _UserDriverProfileScreenState extends State<UserDriverProfileScreen> {
                       _InfoRow('Телефон', profile.phone ?? '—'),
                     ],
                   ),
+                  if (profile.phone != null &&
+                      profile.phone!.trim().isNotEmpty) ...<Widget>[
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: () => _callPhone(context, profile.phone!),
+                      icon: const Icon(Icons.phone_rounded),
+                      label: const Text('Связаться с водителем'),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   _infoCard(
                     title: 'Автомобиль',
@@ -110,8 +132,8 @@ class _UserDriverProfileScreenState extends State<UserDriverProfileScreen> {
           CircleAvatar(
             radius: 48,
             backgroundColor: AppColors.primaryLight,
-            backgroundImage: profile.photoUrl != null
-                ? NetworkImage(profile.photoUrl!)
+            backgroundImage: PhotoUrlResolver.resolve(profile.photoUrl) != null
+                ? NetworkImage(PhotoUrlResolver.resolve(profile.photoUrl)!)
                 : null,
             child: profile.photoUrl == null
                 ? Text(

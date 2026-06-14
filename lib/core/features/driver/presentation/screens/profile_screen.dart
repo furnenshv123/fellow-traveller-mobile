@@ -1,5 +1,6 @@
 import 'package:fellow_traveller_mobile/core/components/app_screen_body.dart';
 import 'package:fellow_traveller_mobile/core/components/custom_button.dart';
+import 'package:fellow_traveller_mobile/core/components/editable_profile_avatar.dart';
 import 'package:fellow_traveller_mobile/core/di/app_dependencies.dart';
 import 'package:fellow_traveller_mobile/core/features/profile/data/models/driver_profile_model.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
@@ -17,6 +18,7 @@ class DriverProfileScreen extends StatefulWidget {
 class _DriverProfileScreenState extends State<DriverProfileScreen> {
   late Future<DriverProfileModel?> _profileFuture;
   bool _isSwitchingRole = false;
+  String? _photoUrlOverride;
 
   @override
   void initState() {
@@ -25,6 +27,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   }
 
   void _load() {
+    _photoUrlOverride = null;
     _profileFuture = AppDependencies.instance.profileRepository
         .getDriverProfile();
   }
@@ -80,7 +83,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: <Widget>[
-                    _header(profile),
+                    _header(profile, _photoUrlOverride),
                     const SizedBox(height: 12),
                     _section(
                       title: 'Контакты',
@@ -138,7 +141,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
     );
   }
 
-  Widget _header(DriverProfileModel profile) {
+  Widget _header(DriverProfileModel profile, String? photoUrlOverride) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -148,22 +151,12 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
       ),
       child: Column(
         children: <Widget>[
-          CircleAvatar(
-            radius: 48,
-            backgroundColor: AppColors.primaryLight,
-            backgroundImage: profile.photoUrl != null
-                ? NetworkImage(profile.photoUrl!)
-                : null,
-            child: profile.photoUrl == null
-                ? Text(
-                    (profile.fullName ?? 'В')[0],
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
-                    ),
-                  )
-                : null,
+          EditableProfileAvatar(
+            photoUrl: photoUrlOverride ?? profile.photoUrl,
+            fallbackLetter: (profile.fullName ?? 'В')[0],
+            onPhotoChanged: (String? photoUrl) {
+              setState(() => _photoUrlOverride = photoUrl);
+            },
           ),
           const SizedBox(height: 16),
           Text(
