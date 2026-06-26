@@ -7,6 +7,7 @@ import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_mod
 import 'package:fellow_traveller_mobile/core/features/rides/data/models/ride_request_model.dart';
 import 'package:fellow_traveller_mobile/core/features/rides/presentation/widgets/edit_ride_dialog.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
+import 'package:fellow_traveller_mobile/core/utils/phone_launcher.dart';
 import 'package:fellow_traveller_mobile/core/utils/price_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -159,6 +160,18 @@ class _DriverRideRequestsScreenState extends State<DriverRideRequestsScreen> {
     if (rated && mounted) {
       setState(() => _ratedPassengerIds.add(request.passengerProfileId));
     }
+  }
+
+  Future<void> _callPhone(String phone) async {
+    final launched = await PhoneLauncher.call(phone);
+    if (!mounted || launched) {
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Не удалось открыть приложение для звонка')),
+      );
   }
 
   String _formatDate(String iso) {
@@ -402,6 +415,9 @@ class _DriverRideRequestsScreenState extends State<DriverRideRequestsScreen> {
                         onRateTap: _canRatePassenger(request)
                             ? () => _openPassengerRating(request)
                             : null,
+                        onCall: request.passengerPhone != null
+                            ? () => _callPhone(request.passengerPhone!)
+                            : null,
                       );
                     },
                   ),
@@ -469,6 +485,7 @@ class _PassengerRequestCard extends StatelessWidget {
     this.onAccept,
     this.onReject,
     this.onRateTap,
+    this.onCall,
     this.isProcessing = false,
   });
 
@@ -477,6 +494,7 @@ class _PassengerRequestCard extends StatelessWidget {
   final VoidCallback? onAccept;
   final VoidCallback? onReject;
   final VoidCallback? onRateTap;
+  final VoidCallback? onCall;
   final bool isProcessing;
 
   @override
@@ -552,6 +570,21 @@ class _PassengerRequestCard extends StatelessWidget {
             Text(
               request.passengerPhone!,
               style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            ),
+          ],
+          if (onCall != null) ...<Widget>[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onCall,
+                icon: const Icon(Icons.phone_rounded, size: 18),
+                label: const Text('Позвонить'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
+                ),
+              ),
             ),
           ],
           if (onAccept != null && onReject != null) ...<Widget>[

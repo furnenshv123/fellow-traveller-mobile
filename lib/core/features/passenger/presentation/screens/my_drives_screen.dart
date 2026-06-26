@@ -8,6 +8,8 @@ import 'package:fellow_traveller_mobile/core/utils/app_bottom_sheet.dart';
 import 'package:fellow_traveller_mobile/core/utils/colors/app_colors.dart';
 import 'package:fellow_traveller_mobile/core/utils/price_formatter.dart';
 import 'package:fellow_traveller_mobile/core/utils/user_profile_navigation.dart';
+import 'package:fellow_traveller_mobile/core/utils/maps_route_launcher.dart';
+import 'package:fellow_traveller_mobile/core/utils/phone_launcher.dart';
 import 'package:flutter/material.dart';
 
 class PassengerMyRidesScreen extends StatefulWidget {
@@ -234,6 +236,33 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
     );
   }
 
+  Future<void> _callPhone(String phone) async {
+    final launched = await PhoneLauncher.call(phone);
+    if (!mounted || launched) {
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Не удалось открыть приложение для звонка')),
+      );
+  }
+
+  Future<void> _openRouteInMaps(PassengerRideRequestModel request) async {
+    final opened = await MapsRouteLauncher.openRoute(
+      from: request.fromPoint.name,
+      to: request.toPoint.name,
+    );
+    if (!mounted || opened) {
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Не удалось открыть карты')),
+      );
+  }
+
   void _showDetails(
     BuildContext context,
     PassengerRideRequestModel request, {
@@ -275,8 +304,15 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
                       : null,
                   child: _detailRow('Водитель', request.driverName!),
                 ),
-              if (request.driverPhone != null)
+              if (request.driverPhone != null) ...<Widget>[
                 _detailRow('Телефон', request.driverPhone!),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () => _callPhone(request.driverPhone!),
+                  icon: const Icon(Icons.phone_rounded),
+                  label: const Text('Позвонить водителю'),
+                ),
+              ],
               if (request.driverCarModel != null)
                 _detailRow('Авто', request.driverCarModel!),
               _detailRow('Цена', PriceFormatter.format(request.price)),
@@ -296,7 +332,15 @@ class _PassengerMyRidesScreenState extends State<PassengerMyRidesScreen> {
                 ),
               ],
               const SizedBox(height: 16),
-              
+              OutlinedButton.icon(
+                onPressed: () => _openRouteInMaps(request),
+                icon: const Icon(Icons.map_outlined),
+                label: const Text('Маршрут на карте'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
+                ),
+              ),
             ],
           ),
         );
